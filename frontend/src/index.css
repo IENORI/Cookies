@@ -13,6 +13,7 @@ body {
 main {
   flex: 1;
 }
+
 .products {
   display: flex;
   flex-wrap: wrap;
