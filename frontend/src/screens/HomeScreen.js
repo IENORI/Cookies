@@ -47,7 +47,7 @@ function HomeScreen() {
       <h1>Feature Cookies!</h1>
       <div className="products">
         {loading ? (
-          <div>Loading...</div>
+          <LoadingBox />
         ) : error ? (
           <div>{error}</div>
         ) : (
