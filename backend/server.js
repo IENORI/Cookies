@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import seedRouter from "./routes/seedRoutes.js";
 import productRouter from "./routes/productRoutes.js";
+import userRouter from "./routes/userRoutes.js";
 
 dotenv.config(); //to fetch variables
 
@@ -18,8 +19,19 @@ mongoose
   });
 
 const app = express();
+
+//used for POST/PUT so as to read the data being POSTed
+app.use(express.json()); //parse the body from post request EXCEPT from html post form
+app.use(express.urlencoded({ extended: true })); //to then enable parsing of the body from HTML post form
+
 app.use("/api/seed", seedRouter); //if route matches /api/seed -> callback
 app.use("/api/products", productRouter);
+app.use("/api/users", userRouter);
+
+//for express async handler (used in userRoutes)
+app.use((err, req, res, next) => {
+  res.status(500).send({ message: err.message });
+});
 
 const port = process.env.PORT || 5000;
 app.listen(port, (req, res) => {
