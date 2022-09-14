@@ -1,5 +1,19 @@
 import express from "express";
 import data from "./data.js";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+
+dotenv.config(); //to fetch variables
+
+//connect to mongodb, mongoose.connect returns promise, so can then
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log("Connected to database!");
+  })
+  .catch((err) => {
+    console.log(err.message);
+  });
 
 const app = express();
 const port = process.env.PORT || 5000;

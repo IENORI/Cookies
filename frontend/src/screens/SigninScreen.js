@@ -7,7 +7,7 @@ import { Helmet } from "react-helmet-async";
 export default function SigninScreen() {
   const { search } = useLocation(); //to get only the "search" portion of the URL (signin?redirect=/shipping), which is redirect=/shipping
   const redirectInUrl = new URLSearchParams(search).get("redirect"); //get the value of redirect, which is /shipping
-  const redirect = redirectInUrl ? redirectInUrl : "/";
+  const redirect = redirectInUrl ? redirectInUrl : "/"; //if empty then use /
   return (
     <Container className="small-container">
       <Helmet>
