@@ -10,7 +10,7 @@ import { useContext } from "react";
 import { Store } from "./Store";
 
 function App() {
-  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { state } = useContext(Store);
   const { cart } = state;
   return (
     <BrowserRouter>
