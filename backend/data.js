@@ -1,7 +1,7 @@
 const data = {
   products: [
     {
-      _id: "1",
+      //_id: "1",
       name: "Chocolate Chip Cookies",
       slug: "chocolate-chip-cookies",
       category: "Chips",
@@ -11,7 +11,7 @@ const data = {
       description: "Freshly baked chocolate chips",
     },
     {
-      _id: "2",
+      //_id: "2",
       name: "Chocolate Chip Cookies",
       name: "Strawberry Chip Cookies",
       slug: "strawberry-chip-cookies",
@@ -22,7 +22,7 @@ const data = {
       description: "Freshly baked strawberry chips",
     },
     {
-      _id: "3",
+      //_id: "3",
       name: "Chocolate Chip Cookies",
       name: "Blueberry Chip Cookies",
       slug: "blueberry-chip-cookies",
