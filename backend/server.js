@@ -25,6 +25,10 @@ const app = express();
 app.use(express.json()); //parse the body from post request EXCEPT from html post form
 app.use(express.urlencoded({ extended: true })); //to then enable parsing of the body from HTML post form
 
+app.get("/api/keys/paypal", (req, res) => {
+  res.send(process.env.PAYPAL_CLIENT_ID || "sb"); //return sandbox if no client id
+});
+
 app.use("/api/seed", seedRouter); //if route matches /api/seed -> callback
 app.use("/api/products", productRouter);
 app.use("/api/users", userRouter);
