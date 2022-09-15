@@ -29,6 +29,16 @@ orderRouter.post(
   })
 );
 
+//have to come before /:id because they can conflict and use the other one first, this one should have priority here
+orderRouter.get(
+  "/mine",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const orders = await Order.find({ user: req.user._id });
+    res.send(orders);
+  })
+);
+
 orderRouter.get(
   "/:id",
   isAuth,
