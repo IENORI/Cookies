@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import seedRouter from "./routes/seedRoutes.js";
 import productRouter from "./routes/productRoutes.js";
 import userRouter from "./routes/userRoutes.js";
+import orderRouter from "./routes/orderRoutes.js";
 
 dotenv.config(); //to fetch variables
 
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: true })); //to then enable parsing of the
 app.use("/api/seed", seedRouter); //if route matches /api/seed -> callback
 app.use("/api/products", productRouter);
 app.use("/api/users", userRouter);
+app.use("/api/orders", orderRouter);
 
 //for express async handler (used in userRoutes)
 app.use((err, req, res, next) => {
