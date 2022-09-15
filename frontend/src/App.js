@@ -21,6 +21,7 @@ import OrderScreen from "./screens/OrderScreen";
 import OrderHistoryScreen from "./screens/OrderHistoryScreen";
 import NavbarToggle from "react-bootstrap/esm/NavbarToggle";
 import NavbarCollapse from "react-bootstrap/esm/NavbarCollapse";
+import ProfileScreen from "./screens/ProfileScreen";
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -31,6 +32,7 @@ function App() {
     localStorage.removeItem("userInfo");
     localStorage.removeItem("shippingAddress");
     localStorage.removeItem("paymentMethod");
+    window.location.href = "/signin"; //redirect user back to sign in screen, else it will crash lol
   };
   return (
     <BrowserRouter>
@@ -93,6 +95,7 @@ function App() {
               <Route path="/placeorder" element={<PlaceOrderScreen />} />
               <Route path="/order/:id" element={<OrderScreen />} />
               <Route path="/orderhistory" element={<OrderHistoryScreen />} />
+              <Route path="/profile" element={<ProfileScreen />} />
             </Routes>
           </Container>
         </main>
