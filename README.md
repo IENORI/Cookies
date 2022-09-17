@@ -6,18 +6,37 @@
 
 ### Setting up backend
 0. Place `.env` at root of `backend/`
-1. Install backend dependencies `npm install`
-2. Start service `npm start`
-- Expected output
+
+1. Install backend dependencies
+```
+cd backend/
+npm install
+```
+
+2. Start service
+```
+npm start
+```
+
+3. Expected output
 ```
 Server is up at: http://localhost:5000
 Connected to database!
 ```
 
 ### Setting up frontend
-1. Install frontend dependencies `npm install`
-2. Start service `npm start`
-- Expected output
+1. Install frontend dependencies
+```
+cd frontend/
+npm install
+```
+
+2. Start service 
+```
+npm start
+```
+
+3. Expected output
 ```
 webpack compiled successfully
 ```
