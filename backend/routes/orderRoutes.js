@@ -5,6 +5,11 @@ import { isAuth } from "../utils.js";
 
 const orderRouter = express.Router();
 
+orderRouter.get('/orders', async (req, res) => {
+  const orders = await Order.find();
+  res.send(orders);
+});
+
 //isAuth is the an additioanl middle ware in utils.js, check:http://expressjs.com/en/4x/api.html#app.post.method
 orderRouter.post(
   "/",
@@ -74,5 +79,30 @@ orderRouter.put(
     }
   })
 );
+
+orderRouter.put(
+  '/update/:id',
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (order) {
+      order.isDelivered = req.body.isDelivered
+      const updatedOrder = await order.save();
+      res.send(updatedOrder);
+    } else {
+      res.status(404).send({ message: 'Order not found' });
+    }
+  })
+);
+
+orderRouter.delete(
+  '/delete/:id',
+  expressAsyncHandler(async (req, res) => {
+    const id = req.params.id
+    const order = await Order.findByIdAndRemove(id).exec();
+    res.send("order deleted");
+    return;
+  })
+);
+
 
 export default orderRouter;

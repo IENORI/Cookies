@@ -6,6 +6,11 @@ import { isAuth, generateToken } from "../utils.js";
 
 const userRouter = express.Router();
 
+userRouter.get('/', async (req, res) => {
+  const users = await User.find({ isAdmin: false });
+  res.send(users);
+});
+
 userRouter.post(
   "/signin",
   expressAsyncHandler(async (req, res) => {
@@ -72,6 +77,16 @@ userRouter.put(
     } else {
       res.status(404).send({ message: "User not found" });
     }
+  })
+);
+
+userRouter.delete(
+  '/deleteuser/:id',
+  expressAsyncHandler(async (req, res) => {
+    const id = req.params.id
+    const user = await User.findByIdAndRemove(id).exec();
+    res.send("user deleted");
+    return;
   })
 );
 
