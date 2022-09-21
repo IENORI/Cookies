@@ -1,38 +1,43 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import HomeScreen from "./screens/HomeScreen";
-import ProductScreen from "./screens/ProductScreen";
-import NavBar from "react-bootstrap/Navbar";
-import Badge from "react-bootstrap/Badge";
-import Nav from "react-bootstrap/Nav";
-import Container from "react-bootstrap/Container";
-import NavDropDown from "react-bootstrap/NavDropdown";
-import { LinkContainer } from "react-router-bootstrap";
-import { useContext } from "react";
-import { Store } from "./Store";
-import CartScreen from "./screens/CartScreen";
-import SigninScreen from "./screens/SigninScreen";
-import ShippingAddressScreen from "./screens/ShippingAddressScreen";
-import SignupScreen from "./screens/SignupScreen";
-import PaymentMethodScreen from "./screens/PaymentMethodScreen";
-import PlaceOrderScreen from "./screens/PlaceOrderScreen";
-import OrderScreen from "./screens/OrderScreen";
-import OrderHistoryScreen from "./screens/OrderHistoryScreen";
-import NavbarToggle from "react-bootstrap/esm/NavbarToggle";
-import NavbarCollapse from "react-bootstrap/esm/NavbarCollapse";
-import ProfileScreen from "./screens/ProfileScreen";
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import HomeScreen from './screens/HomeScreen';
+import ProductScreen from './screens/ProductScreen';
+import NavBar from 'react-bootstrap/Navbar';
+import Badge from 'react-bootstrap/Badge';
+import Nav from 'react-bootstrap/Nav';
+import Container from 'react-bootstrap/Container';
+import NavDropDown from 'react-bootstrap/NavDropdown';
+import { LinkContainer } from 'react-router-bootstrap';
+import { useContext } from 'react';
+import { Store } from './Store';
+import CartScreen from './screens/CartScreen';
+import SigninScreen from './screens/SigninScreen';
+import ShippingAddressScreen from './screens/ShippingAddressScreen';
+import SignupScreen from './screens/SignupScreen';
+import PaymentMethodScreen from './screens/PaymentMethodScreen';
+import PlaceOrderScreen from './screens/PlaceOrderScreen';
+import OrderScreen from './screens/OrderScreen';
+import OrderHistoryScreen from './screens/OrderHistoryScreen';
+import NavbarToggle from 'react-bootstrap/esm/NavbarToggle';
+import NavbarCollapse from 'react-bootstrap/esm/NavbarCollapse';
+import ProfileScreen from './screens/ProfileScreen';
+import AdminRoute from './components/AdminRoute';
+import ProductListScreen from './screens/ProductListScreen';
+import OrderManageScreen from './screens/OrderManageScreen';
+import OrderAdminScreen from './screens/OrderAdminScreen';
+import UserListScreen from './screens/UserListScreen';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { cart, userInfo } = state;
 
   const signoutHandler = () => {
-    ctxDispatch({ type: "USER_SIGNOUT" });
-    localStorage.removeItem("userInfo");
-    localStorage.removeItem("shippingAddress");
-    localStorage.removeItem("paymentMethod");
-    window.location.href = "/signin"; //redirect user back to sign in screen, else it will crash lol
+    ctxDispatch({ type: 'USER_SIGNOUT' });
+    localStorage.removeItem('userInfo');
+    localStorage.removeItem('shippingAddress');
+    localStorage.removeItem('paymentMethod');
+    window.location.href = '/signin'; //redirect user back to sign in screen, else it will crash lol
   };
   return (
     <BrowserRouter>
@@ -74,8 +79,21 @@ function App() {
                     </NavDropDown>
                   ) : (
                     <Link to="/signin" className="nav-link">
-                      Sign In{" "}
+                      Sign In{' '}
                     </Link>
+                  )}
+                  {userInfo && userInfo.isAdmin && (
+                    <NavDropDown title="Admin" id="admin-nav-dropdown">
+                      <LinkContainer to="/admin/productlist">
+                        <NavDropDown.Item>Products</NavDropDown.Item>
+                      </LinkContainer>
+                      <LinkContainer to="/admin/orderlist">
+                        <NavDropDown.Item>Orders</NavDropDown.Item>
+                      </LinkContainer>
+                      <LinkContainer to="/admin/userlist">
+                          <NavDropDown.Item>Users</NavDropDown.Item>
+                        </LinkContainer>
+                    </NavDropDown>
                   )}
                 </Nav>
               </NavbarCollapse>
@@ -96,6 +114,12 @@ function App() {
               <Route path="/order/:id" element={<OrderScreen />} />
               <Route path="/orderhistory" element={<OrderHistoryScreen />} />
               <Route path="/profile" element={<ProfileScreen />} />
+              {/* Admin Routes */ }
+              <Route path="/admin/productlist" element={<AdminRoute><ProductListScreen /></AdminRoute>}></Route>
+              <Route path="/admin/orderlist" element={<AdminRoute><OrderManageScreen /></AdminRoute>}></Route>
+              <Route path="/admin/orderlist/:id" element={<AdminRoute><OrderAdminScreen /></AdminRoute>}></Route>
+              <Route path="/admin/userlist" element={<AdminRoute><UserListScreen /></AdminRoute>}></Route>
+              <Route path="/" element={<HomeScreen />} />
             </Routes>
           </Container>
         </main>
