@@ -1,8 +1,9 @@
-import express from "express";
-import bcrypt from "bcryptjs";
-import expressAsyncHandler from "express-async-handler";
-import User from "../models/userModel.js";
-import { isAuth, generateToken } from "../utils.js";
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import expressAsyncHandler from 'express-async-handler';
+import User from '../models/userModel.js';
+import { isAuth, generateToken } from '../utils.js';
+import axios from 'axios';
 
 const userRouter = express.Router();
 
@@ -12,8 +13,31 @@ userRouter.get('/', async (req, res) => {
 });
 
 userRouter.post(
-  "/signin",
+  '/signin',
   expressAsyncHandler(async (req, res) => {
+    //Destructuring response token from request body
+    const token = req.body.token;
+    //sends secret key and response token to google
+    try {
+      let result = await axios({
+        method: 'post',
+        url: 'https://www.google.com/recaptcha/api/siteverify',
+        params: {
+          secret: process.env.CAPTCHA_SECRET_KEY,
+          response: token,
+        },
+      });
+      let data = result.data || {};
+      if (!data.success) {
+        throw {
+          success: false,
+          error: 'response not valid',
+        };
+      }
+    } catch (err) {
+      res.status(401).send({ message: 'Captcha Error' }); //401 is unauthorized
+    }
+
     const user = await User.findOne({ email: req.body.email }); //return document found
     if (user) {
       //if user exist
@@ -29,12 +53,12 @@ userRouter.post(
         return; //no need to continue after this
       }
     }
-    res.status(401).send({ message: "Invalid email or password" }); //401 is unauthorized
+    res.status(401).send({ message: 'Invalid email or password' }); //401 is unauthorized
   })
 );
 
 userRouter.post(
-  "/signup",
+  '/signup',
   expressAsyncHandler(async (req, res) => {
     const newUser = new User({
       name: req.body.name,
@@ -54,7 +78,7 @@ userRouter.post(
 );
 
 userRouter.put(
-  "/profile",
+  '/profile',
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id); //you can do it like this because it was passed over from the isAuth
@@ -75,7 +99,7 @@ userRouter.put(
         token: generateToken(updatedUser), //reupdate tokens and everything else
       });
     } else {
-      res.status(404).send({ message: "User not found" });
+      res.status(404).send({ message: 'User not found' });
     }
   })
 );
@@ -83,9 +107,9 @@ userRouter.put(
 userRouter.delete(
   '/deleteuser/:id',
   expressAsyncHandler(async (req, res) => {
-    const id = req.params.id
+    const id = req.params.id;
     const user = await User.findByIdAndRemove(id).exec();
-    res.send("user deleted");
+    res.send('user deleted');
     return;
   })
 );
