@@ -1,5 +1,6 @@
 import express from "express";
 import data from "./data.js";
+import cors from 'cors';
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import seedRouter from "./routes/seedRoutes.js";
@@ -21,6 +22,7 @@ mongoose
 
 const app = express();
 
+app.use(cors()); //enable cross origin resource sharing
 //used for POST/PUT so as to read the data being POSTed
 app.use(express.json()); //parse the body from post request EXCEPT from html post form
 app.use(express.urlencoded({ extended: true })); //to then enable parsing of the body from HTML post form

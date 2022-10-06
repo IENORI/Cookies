@@ -1,37 +1,45 @@
-import { useLocation, Link, useNavigate } from "react-router-dom";
-import Container from "react-bootstrap/Container";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import { Helmet } from "react-helmet-async";
-import axios from "axios";
-import { useContext, useEffect, useState } from "react";
-import { Store } from "../Store";
-import { toast } from "react-toastify";
-import { getError } from "../utils";
+import { useLocation, Link, useNavigate } from 'react-router-dom';
+import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import { Helmet } from 'react-helmet-async';
+import axios from 'axios';
+import { useContext, useEffect, useState } from 'react';
+import { Store } from '../Store';
+import { toast } from 'react-toastify';
+import { getError } from '../utils';
+import Recaptcha from 'react-google-recaptcha';
+import React, { useRef } from 'react';
 
 export default function SigninScreen() {
   const navigate = useNavigate();
   const { search } = useLocation(); //to get only the "search" portion of the URL (signin?redirect=/shipping), which is redirect=/shipping
-  const redirectInUrl = new URLSearchParams(search).get("redirect"); //get the value of redirect, which would be /shipping if came from checkout
-  const redirect = redirectInUrl ? redirectInUrl : "/"; //if empty then use /
+  const redirectInUrl = new URLSearchParams(search).get('redirect'); //get the value of redirect, which would be /shipping if came from checkout
+  const redirect = redirectInUrl ? redirectInUrl : '/'; //if empty then use /
+  const captchaRef = useRef(null);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const { state, dispatch: ctxDispatch } = useContext(Store); //to use the context that was already defined
   const { userInfo } = state;
 
   const submitHandler = async (e) => {
     e.preventDefault(); //prevents page from refreshing
+    const token = captchaRef.current.getValue();
+    console.log(token);
+    captchaRef.current.reset();
     try {
-      const { data } = await axios.post("/api/users/signin", {
+      const { data } = await axios.post('/api/users/signin', {
+        token,
         email,
         password,
       });
+      console.log(data);
       //after successful login
-      ctxDispatch({ type: "USER_SIGNIN", payload: data }); //payload that is passed along with action
-      localStorage.setItem("userInfo", JSON.stringify(data));
-      navigate(redirect || "/"); //redirect to shipping (if clicked from cart, else redirect back to home page cuz is just regular sign in)
+      ctxDispatch({ type: 'USER_SIGNIN', payload: data }); //payload that is passed along with action
+      localStorage.setItem('userInfo', JSON.stringify(data));
+      navigate(redirect || '/'); //redirect to shipping (if clicked from cart, else redirect back to home page cuz is just regular sign in)
     } catch (err) {
       toast.error(getError(err));
     }
@@ -70,9 +78,13 @@ export default function SigninScreen() {
           <Button type="submit">Sign In</Button>
         </div>
         <div className="mb-3">
-          New Customer?{" "}
+          New Customer?{' '}
           <Link to={`/signup?redirect=${redirect}`}>Create your account</Link>
         </div>
+        <Recaptcha
+          sitekey="6LfBO1wiAAAAABMihKPtNV-GN0nqvZdvarzmIEV_"
+          ref={captchaRef}
+        />
       </Form>
     </Container>
   );
