@@ -1,0 +1,14 @@
+services:
+
+  jenkins:
+    container_name: jenkins-build-server
+    image: ghcr.io/junhui-f/docker-jenkins-blueocean:main
+    ports:
+      - 8080:8080
+    volumes:
+      - docker_home/jenkins/certs:/certs/client:ro
+      - docker_home/jenkins/data:/var/jenkins_home
+    environment:
+      - DOCKER_HOST=tcp://docker:2376
+      - DOCKER_CERT_PATH=/certs/client
+      - DOCKER_TLS_VERIFY=1
