@@ -21,7 +21,7 @@ export default function SigninScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const { state, dispatch: ctxDispatch } = useContext(Store); //to use the context that was already defined
+  const { state } = useContext(Store); //to use the context that was already defined
   const { userInfo } = state;
 
   const submitHandler = async (e) => {
@@ -35,11 +35,9 @@ export default function SigninScreen() {
         email,
         password,
       });
-      console.log(data);
       //after successful login
-      ctxDispatch({ type: 'USER_SIGNIN', payload: data }); //payload that is passed along with action
-      localStorage.setItem('userInfo', JSON.stringify(data));
-      navigate(redirect || '/'); //redirect to shipping (if clicked from cart, else redirect back to home page cuz is just regular sign in)
+      localStorage.setItem('validUserIdEmail', JSON.stringify(data)); // only storing valid user id/email locally for token verification
+      navigate('/verify'); //redirect back to OTP screen
     } catch (err) {
       toast.error(getError(err));
     }

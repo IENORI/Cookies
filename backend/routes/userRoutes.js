@@ -4,8 +4,22 @@ import expressAsyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
 import { isAuth, generateToken } from '../utils.js';
 import axios from 'axios';
+import nodemailer from 'nodemailer';
+import speakeasy from 'speakeasy';
+import dotenv from "dotenv";
+
+dotenv.config(); //to fetch variables
 
 const userRouter = express.Router();
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
+  auth: {
+    user: 'noreplycookie3x03@gmail.com',
+    pass: process.env.GOOGLE_APP_PASS,
+  },
+});
 
 userRouter.get('/', async (req, res) => {
   const users = await User.find({ isAdmin: false });
@@ -42,13 +56,25 @@ userRouter.post(
     if (user) {
       //if user exist
       if (bcrypt.compareSync(req.body.password, user.password)) {
+        // generate otp
+        const secret = speakeasy.generateSecret({ length: 20 });
+        const temp_otp = speakeasy.totp({
+          secret: secret.base32,
+          encoding: 'base32',
+        });
+        // save temp_otp to user's temp_secret in database
+        user.temp_secret = secret.base32;
+        await user.save();
+        // send email to user
+        transporter.sendMail({
+          to: user.email,
+          subject: 'Verification code',
+          html: `<h1>Your verification code is: ${temp_otp}</h1>`,
+        });
         //compare password
         res.send({
           _id: user._id,
-          name: user.name,
           email: user.email,
-          isAdmin: user.isAdmin,
-          token: generateToken(user),
         });
         return; //no need to continue after this
       }
@@ -111,6 +137,63 @@ userRouter.delete(
     const user = await User.findByIdAndRemove(id).exec();
     res.send('user deleted');
     return;
+  })
+);
+
+userRouter.post(
+  '/resendcode',
+  expressAsyncHandler(async (req, res) => {
+    const user = await User.findById(req.body.userId);
+    if (user) {
+      // generate otp
+      const secret = speakeasy.generateSecret({ length: 20 });
+      const temp_otp = speakeasy.totp({
+        secret: secret.base32,
+        encoding: 'base32',
+      });
+      // save temp_otp to user's temp_secret in database
+      user.temp_secret = secret.base32;
+      await user.save();
+      // send email to user
+      transporter.sendMail({
+        to: user.email,
+        subject: 'Verification code',
+        html: `<h1>Your verification code is: ${temp_otp}</h1>`,
+      });
+      res.send('Code resend');
+    }else{
+      res.status(404).send({ message: 'User not found' });
+    }
+  })
+);
+
+userRouter.post(
+  '/verify',
+  expressAsyncHandler(async (req, res) => {
+    const user = await User.findById(req.body.userId);
+    const temp_otp = req.body.token;
+    if (user) {
+      const stored_secret = user.temp_secret;
+      // Verify a given token
+      var validToken = speakeasy.totp.verify({
+        secret: stored_secret,
+        encoding: 'base32',
+        token: temp_otp,
+        window: 1, // default is 1 = 30seconds, increase window by 1 = adding 30 seconds grace time from time code was generated
+      });
+      if (validToken) {
+        // verification succeeded
+        res.send({
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          isAdmin: user.isAdmin,
+          token: generateToken(user),
+        });
+      } else {
+        res.status(404).send({ message: 'Wrong or expired code entered' });
+      }
+    }
   })
 );
 
