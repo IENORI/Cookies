@@ -43,7 +43,7 @@ export default function UserListScreen() {
       //setProducts(result.data);
     };
     fetchData();
-  }, []);
+  }, [ctxDispatch]);
 
   return (
     <div>

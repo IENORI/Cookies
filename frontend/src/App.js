@@ -28,6 +28,7 @@ import OrderManageScreen from './screens/OrderManageScreen';
 import OrderAdminScreen from './screens/OrderAdminScreen';
 import UserListScreen from './screens/UserListScreen';
 import OTPScreen from './screens/OTPScreen';
+import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -108,6 +109,7 @@ function App() {
               <Route path="/cart" element={<CartScreen />} />
               <Route path="/signin" element={<SigninScreen />} />
               <Route path="/verify" element={<OTPScreen />} />
+              <Route path="/forgotpassword" element={<ForgotPasswordScreen />} />
               <Route path="/product/:slug" element={<ProductScreen />} />
               <Route path="/shipping" element={<ShippingAddressScreen />} />
               <Route path="/signup" element={<SignupScreen />} />

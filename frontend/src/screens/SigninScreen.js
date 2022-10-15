@@ -8,7 +8,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Store } from '../Store';
 import { toast } from 'react-toastify';
 import { getError } from '../utils';
-import Recaptcha from 'react-google-recaptcha';
+import Recaptcha from 'react-google-recaptcha'; // remove <React.StrictMode> tag in index.js to remove recaptcha bug cause from back button, anyway strict mode is only use in development and not in production application
 import React, { useRef } from 'react';
 
 export default function SigninScreen() {
@@ -72,6 +72,9 @@ export default function SigninScreen() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </Form.Group>
+        <div className="mb-3">
+          <Link to={'/forgotpassword'}>Forgot Password?</Link>
+        </div>
         <div className="mb-3">
           <Button type="submit">Sign In</Button>
         </div>
