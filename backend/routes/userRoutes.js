@@ -6,7 +6,8 @@ import { isAuth, generateToken } from '../utils.js';
 import axios from 'axios';
 import nodemailer from 'nodemailer';
 import speakeasy from 'speakeasy';
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
+import passwordgenerator from 'generate-password';
 
 dotenv.config(); //to fetch variables
 
@@ -161,7 +162,7 @@ userRouter.post(
         html: `<h1>Your verification code is: ${temp_otp}</h1>`,
       });
       res.send('Code resend');
-    }else{
+    } else {
       res.status(404).send({ message: 'User not found' });
     }
   })
@@ -193,6 +194,35 @@ userRouter.post(
       } else {
         res.status(404).send({ message: 'Wrong or expired code entered' });
       }
+    }
+  })
+);
+
+userRouter.post(
+  '/resetpassword',
+  expressAsyncHandler(async (req, res) => {
+    const user = await User.findOne({ email: req.body.email });
+    if (user) {
+      // generate random password
+      const randomPassword = passwordgenerator.generate({
+        length: 10,
+        numbers: true,
+        symbols: true,
+        exclude: ['', '.', ','], // list of characters to exclude
+        excludeSimilarCharacters: true,
+      });
+      // save new password generated to database
+      user.password = bcrypt.hashSync(randomPassword);
+      await user.save();
+      // send email to user
+      transporter.sendMail({
+        to: user.email,
+        subject: 'Password reset',
+        html: `<h1>Your new login password is:${randomPassword}</h1>`,
+      });
+      res.send(`New password have been sent to ${user.email}`);
+    } else {
+      res.status(404).send({ message: 'Email does not exist' });
     }
   })
 );
