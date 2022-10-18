@@ -29,6 +29,8 @@ import OrderAdminScreen from './screens/OrderAdminScreen';
 import UserListScreen from './screens/UserListScreen';
 import OTPScreen from './screens/OTPScreen';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
+import AutoLogout from './components/AutoLogout';
+import CheckDeviceLogin from './components/CheckDeviceLogin';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -43,6 +45,8 @@ function App() {
   };
   return (
     <BrowserRouter>
+      {userInfo ? <CheckDeviceLogin></CheckDeviceLogin> : null} {/*Create check device login component when user is logged in*/}
+      {userInfo ? <AutoLogout></AutoLogout> : null} {/*Create auto logout component when user is logged in*/}
       <div className="d-flex flex-column site-container">
         <ToastContainer position="bottom-center" limit={1} />
         <header>
@@ -93,8 +97,8 @@ function App() {
                         <NavDropDown.Item>Orders</NavDropDown.Item>
                       </LinkContainer>
                       <LinkContainer to="/admin/userlist">
-                          <NavDropDown.Item>Users</NavDropDown.Item>
-                        </LinkContainer>
+                        <NavDropDown.Item>Users</NavDropDown.Item>
+                      </LinkContainer>
                     </NavDropDown>
                   )}
                 </Nav>
@@ -109,7 +113,10 @@ function App() {
               <Route path="/cart" element={<CartScreen />} />
               <Route path="/signin" element={<SigninScreen />} />
               <Route path="/verify" element={<OTPScreen />} />
-              <Route path="/forgotpassword" element={<ForgotPasswordScreen />} />
+              <Route
+                path="/forgotpassword"
+                element={<ForgotPasswordScreen />}
+              />
               <Route path="/product/:slug" element={<ProductScreen />} />
               <Route path="/shipping" element={<ShippingAddressScreen />} />
               <Route path="/signup" element={<SignupScreen />} />
@@ -118,11 +125,39 @@ function App() {
               <Route path="/order/:id" element={<OrderScreen />} />
               <Route path="/orderhistory" element={<OrderHistoryScreen />} />
               <Route path="/profile" element={<ProfileScreen />} />
-              {/* Admin Routes */ }
-              <Route path="/admin/productlist" element={<AdminRoute><ProductListScreen /></AdminRoute>}></Route>
-              <Route path="/admin/orderlist" element={<AdminRoute><OrderManageScreen /></AdminRoute>}></Route>
-              <Route path="/admin/orderlist/:id" element={<AdminRoute><OrderAdminScreen /></AdminRoute>}></Route>
-              <Route path="/admin/userlist" element={<AdminRoute><UserListScreen /></AdminRoute>}></Route>
+              {/* Admin Routes */}
+              <Route
+                path="/admin/productlist"
+                element={
+                  <AdminRoute>
+                    <ProductListScreen />
+                  </AdminRoute>
+                }
+              ></Route>
+              <Route
+                path="/admin/orderlist"
+                element={
+                  <AdminRoute>
+                    <OrderManageScreen />
+                  </AdminRoute>
+                }
+              ></Route>
+              <Route
+                path="/admin/orderlist/:id"
+                element={
+                  <AdminRoute>
+                    <OrderAdminScreen />
+                  </AdminRoute>
+                }
+              ></Route>
+              <Route
+                path="/admin/userlist"
+                element={
+                  <AdminRoute>
+                    <UserListScreen />
+                  </AdminRoute>
+                }
+              ></Route>
               <Route path="/" element={<HomeScreen />} />
             </Routes>
           </Container>

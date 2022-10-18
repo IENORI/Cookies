@@ -27,7 +27,6 @@ export default function SigninScreen() {
   const submitHandler = async (e) => {
     e.preventDefault(); //prevents page from refreshing
     const token = captchaRef.current.getValue();
-    console.log(token);
     captchaRef.current.reset();
     try {
       const { data } = await axios.post('/api/users/signin', {
