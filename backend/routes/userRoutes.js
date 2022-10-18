@@ -8,6 +8,7 @@ import nodemailer from 'nodemailer';
 import speakeasy from 'speakeasy';
 import dotenv from 'dotenv';
 import passwordgenerator from 'generate-password';
+import { v1 as uuid } from 'uuid';
 
 dotenv.config(); //to fetch variables
 
@@ -92,6 +93,9 @@ userRouter.post(
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password),
     });
+    const loginId = uuid(); // generate unique login id
+    // saving generated login id to database
+    newUser.login_id = loginId;
     const user = await newUser.save(); //save to database
     //then send the response back to front end
     res.send({
@@ -100,6 +104,7 @@ userRouter.post(
       email: user.email,
       isAdmin: user.isAdmin,
       token: generateToken(user),
+      login_id: loginId, // generate unique id
     });
   })
 );
@@ -184,12 +189,17 @@ userRouter.post(
       });
       if (validToken) {
         // verification succeeded
+        const loginId = uuid(); // generate unique login id
+        // saving generated login id to database
+        user.login_id = loginId;
+        await user.save();
         res.send({
           _id: user._id,
           name: user.name,
           email: user.email,
           isAdmin: user.isAdmin,
           token: generateToken(user),
+          login_id: loginId,
         });
       } else {
         res.status(404).send({ message: 'Wrong or expired code entered' });
@@ -223,6 +233,23 @@ userRouter.post(
       res.send(`New password have been sent to ${user.email}`);
     } else {
       res.status(404).send({ message: 'Email does not exist' });
+    }
+  })
+);
+
+userRouter.post(
+  '/checkloginid',
+  expressAsyncHandler(async (req, res) => {
+    const user = await User.findById(req.body.userId);
+    if(user){
+      const login_id = req.body.loginId;
+      if(login_id === user.login_id){ // if user's login id is different from saved login id in database
+        res.send('No new login attempt');
+      }else{
+        res.status(404).send({ message: 'Your account has been logged in on another device' })
+      }
+    }else{
+      res.status(404).send({ message: 'Your account has been removed' });
     }
   })
 );
