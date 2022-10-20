@@ -9,6 +9,7 @@ import speakeasy from 'speakeasy';
 import dotenv from 'dotenv';
 import passwordgenerator from 'generate-password';
 import { v1 as uuid } from 'uuid';
+import ratelimit from 'express-rate-limit';
 
 dotenv.config(); //to fetch variables
 
@@ -23,13 +24,27 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// prevent password brute force
+const loginlimiter = ratelimit({
+  windowMs: 10 * 60 * 100, // 10 minutes
+  max: 3, // limit each IP to 5 requests per `window` (here, per 10 minutes)
+  standardHeaders: true, // return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // disable the `X-RateLimit-*` headers
+  statusCode: 401,
+  message: {
+    limiter: true,
+    type: "error",
+    message: "Too many requests, please try again later."
+  }
+})
+
 userRouter.get('/', async (req, res) => {
   const users = await User.find({ isAdmin: false });
   res.send(users);
 });
 
 userRouter.post(
-  '/signin',
+  '/signin', loginlimiter,
   expressAsyncHandler(async (req, res) => {
     //Destructuring response token from request body
     const token = req.body.token;

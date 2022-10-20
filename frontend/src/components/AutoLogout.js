@@ -24,7 +24,7 @@ export default function AutoLogout({ children }) {
       });
       // logs out user
       logoutAction();
-    }, 30000); // 30000ms = 30secs. You can change the time.
+    }, 120000); // 30000ms = 30secs. You can change the time.
   };
 
   // this resets the timer if it exists.
