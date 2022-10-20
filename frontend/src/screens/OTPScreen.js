@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Store } from '../Store';
@@ -8,6 +8,7 @@ import { getError } from '../utils';
 export default function OTPScreen() {
   const [otp, setOtp] = useState(new Array(6).fill(''));
   const { dispatch: ctxDispatch } = useContext(Store); //to use the context that was already defined
+  const [counter, setCounter] = useState(10);
   const navigate = useNavigate();
 
   const handleChange = (element, index) => {
@@ -31,6 +32,7 @@ export default function OTPScreen() {
         });
         // toast resend code success
         toast.success(data);
+        setCounter(30); // start counting down from 30 for every seconds
       } catch (err) {
         toast.error(getError(err));
       }
@@ -52,6 +54,15 @@ export default function OTPScreen() {
       toast.error(getError(err));
     }
   };
+
+  // if counter > 0 keep counting down every 1 sec interval
+  useEffect(() => {
+    if (counter > 0){
+      const timer = setInterval(() => setCounter(counter - 1), 1000);
+      return () => clearInterval(timer);
+    }
+  }, [counter]);
+
   return (
     <>
       <div className="row">
@@ -75,7 +86,7 @@ export default function OTPScreen() {
           })}
 
           <p>OTP Entered - {otp.join('')}</p>
-          <u onClick={sendCodeHandler}>Resend OTP Code</u>
+          {counter > 0 ? (<u>Resend OTP Code in: <span className='text-primary'>{counter}</span></u>) : (<u className='text-primary' onClick={sendCodeHandler}>Resend OTP Code</u>)}
           <p>
             <button
               className="btn btn-secondary mr-2"
