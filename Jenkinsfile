@@ -7,14 +7,11 @@ pipeline {
     }
     stages {
         stage('Build') { 
-            steps {
-                sh 'cd backend'
-                sh 'rm package-lock.json'
+            dir("backend"){
                 sh 'npm install'
-                sh 'cd ..'
-                sh 'cd frontend'
+            }
+            dir("frontend"){
                 sh 'npm install'
-                sh 'cd ..'
             }
         }
     }
