@@ -6,6 +6,9 @@ node_modules
 /.pnp
 .pnp.js
 
+# vs code
+.vs/slnx.sqlite
+
 # testing
 /coverage
 
