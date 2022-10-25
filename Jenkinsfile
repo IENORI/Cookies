@@ -8,7 +8,8 @@ pipeline {
     stages {
         stage('Build') { 
             steps {
-                sh 'npm install'
+                sh 'cd backend'
+                sh 'npm init'
             }
         }
     }
