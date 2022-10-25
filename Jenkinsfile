@@ -9,12 +9,9 @@ pipeline {
         stage('Build') { 
             steps {
                 sh 'cd backend'
-                sh 'npm init'
-                sh 'npm install'
+                sh 'ls'
                 sh 'cd ../frontend'
-                sh 'npm init'
-                sh 'npm install'
-                sh 'cd ..' 
+                sh 'ls'
             }
         }
     }
