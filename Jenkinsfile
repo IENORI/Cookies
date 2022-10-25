@@ -9,6 +9,7 @@ pipeline {
         stage('Build') { 
             steps {
                 sh 'cd backend'
+                sh 'rm package-lock.json'
                 sh 'npm install'
                 sh 'cd ..'
                 sh 'cd frontend'
