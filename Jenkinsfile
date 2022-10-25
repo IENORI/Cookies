@@ -9,7 +9,10 @@ pipeline {
         stage('Build') { 
             steps {
                 dir('backend') {
-                    sh "pwd"
+                    sh 'npm install'
+                }
+                dir('frontend') {
+                    sh 'npm install'
                 }
             }
         }
