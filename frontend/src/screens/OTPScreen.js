@@ -67,7 +67,7 @@ export default function OTPScreen() {
     <>
       <div className="row">
         <div className="col text-center">
-          <h1>Enter the OTP code</h1>
+          <h1>Enter the OTP Code</h1>
           <p>Sent to {validUser.email}</p>
 
           {otp.map((data, index) => {
@@ -86,7 +86,6 @@ export default function OTPScreen() {
           })}
 
           <p>OTP Entered - {otp.join('')}</p>
-          {counter > 0 ? (<u>Resend OTP Code in: <span className='text-primary'>{counter}</span></u>) : (<u className='text-primary' onClick={sendCodeHandler}>Resend OTP Code</u>)}
           <p>
             <button
               className="btn btn-secondary mr-2"
@@ -97,6 +96,10 @@ export default function OTPScreen() {
             <button className="btn btn-primary" onClick={verifyHandler}>
               Verify OTP
             </button>
+            <br/>
+            <br/>
+            <p>Didn't receive the OTP?</p>
+                      {counter > 0 ? (<button type="button" class="btn btn-warning disabled">Resend in <span>{counter}</span></button>) : (<button type="button" class="btn btn-warning" onClick={sendCodeHandler}>Resend OTP Code</button>)}
           </p>
         </div>
       </div>
