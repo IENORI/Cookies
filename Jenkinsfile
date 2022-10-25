@@ -7,11 +7,10 @@ pipeline {
     }
     stages {
         stage('Build') { 
-            dir("backend"){
-                sh 'npm install'
-            }
-            dir("frontend"){
-                sh 'npm install'
+            steps {
+                dir('backend') {
+                    sh "pwd"
+                }
             }
         }
     }
