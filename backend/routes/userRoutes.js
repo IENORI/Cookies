@@ -38,7 +38,7 @@ const loginlimiter = ratelimit({
   }
 })
 
-userRouter.get('/', async (req, res) => {
+userRouter.get('/', isAuth, async (req, res) => {
   const users = await User.find({ isAdmin: false });
   res.send(users);
 });
@@ -153,6 +153,7 @@ userRouter.put(
 
 userRouter.delete(
   '/deleteuser/:id',
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const id = req.params.id;
     const user = await User.findByIdAndRemove(id).exec();
@@ -265,6 +266,23 @@ userRouter.post(
       }
     }else{
       res.status(404).send({ message: 'Your account has been removed' });
+    }
+  })
+);
+
+userRouter.put(
+  '/update/:id',
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id);
+    if (user) {
+      user.name = req.body.name || user.name;
+      user.email = req.body.email || user.email;
+      const updatedUser = await user.save();
+      const updatedUsers = await User.find({isAdmin: false});
+      res.send(updatedUsers);
+    } else {
+      res.status(404).send({ message: 'User not found' });
     }
   })
 );
