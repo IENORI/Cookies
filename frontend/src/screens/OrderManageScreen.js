@@ -25,7 +25,7 @@ const reducer = (state, action) => {
 export default function OrderManageScreen() {
   const navigate = useNavigate();
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { orders } = state;
+  const { orders, userInfo } = state;
   const [{ loading, error }, dispatch] = useReducer(reducer, {
     loading: true,
     error: '',
@@ -49,7 +49,9 @@ export default function OrderManageScreen() {
   }, [ctxDispatch]);
 
   const deleteOrderHandler = async (orderId) => {
-    const { data } = await axios.delete(`/api/orders/delete/${orderId}`);
+    const { data } = await axios.delete(`/api/orders/delete/${orderId}`, {
+      headers: { authorization: `Bearer ${userInfo.token}` },
+    });
     if (data === 'order deleted') {
       ctxDispatch({
         type: 'DELETE_ORDERS',

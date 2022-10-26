@@ -28,7 +28,7 @@ const reducer = (state, action) => {
 
 export default function ProductListScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { products } = state;
+  const { products, userInfo } = state;
   const [imageFile, setImageFile] = useState(null);
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
@@ -78,8 +78,9 @@ export default function ProductListScreen() {
         {
           headers: {
             'content-type': 'multipart/form-data',
+            'authorization': `Bearer ${userInfo.token}`
           },
-        }
+        },
       );
       ctxDispatch({ type: 'ADD_PRODUCT', payload: data });
       handleClose();
