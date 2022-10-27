@@ -6,13 +6,18 @@ pipeline {
         }
     }
     stages {
+        stage("Dep Check") {
+            steps {
+                dependencyCheck additionalArguments: '--format HTML --format XML', odcInstallation: 'Default'
+            }
+        }
         stage('Build') { 
             steps {
                 dir('backend') {
-                    sh 'npm install'
+                    sh 'npm ci --omit=dev'
                 }
                 dir('frontend') {
-                    sh 'npm install'
+                    sh 'npm ci --omit=dev'
                 }
             }
         }
