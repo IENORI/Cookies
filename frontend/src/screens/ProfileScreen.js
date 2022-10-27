@@ -36,35 +36,35 @@ export default function ProfileScreen() {
 
   const submitHandler = async (e) => {
     e.preventDefault(); //prevents refreshing of the page
-      try {
-          const conditions = [
-              password == confirmPassword,
-              password.length >= 8,
-              password.match(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/) != null
-          ]
-          if (!conditions.includes(false)) {
-              const { data } = await axios.put(
-                  "/api/users/profile",
-                  {
-                      name,
-                      email,
-                      password,
-                  },
-                  {
-                      headers: { authorization: `Bearer ${userInfo.token}` },
-                  }
-              );
-              dispatch({ type: "FETCH_SUCCESS" });
-              ctxDispatch({ type: "USER_SIGNIN", payload: data }); //update the application context on the new user info
-              localStorage.setItem("userInfo", JSON.stringify(data));
-              toast.success("User information updated successfully");
-          } else {
-              toast.error("User information failed to update");
+    try {
+      const conditions = [
+        password === confirmPassword,
+        password.length >= 8,
+        password.match(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/) != null
+      ]
+      if (!conditions.includes(false)) {
+        const { data } = await axios.put(
+          "/api/users/profile",
+          {
+            name,
+            email,
+            password,
+          },
+          {
+            headers: { authorization: `Bearer ${userInfo.token}` },
           }
-      } catch (err) {
+        );
+        dispatch({ type: "FETCH_SUCCESS" });
+        ctxDispatch({ type: "USER_SIGNIN", payload: data }); //update the application context on the new user info
+        localStorage.setItem("userInfo", JSON.stringify(data));
+        toast.success("User information updated successfully");
+      } else {
+        toast.error("User information failed to update");
+      }
+    } catch (err) {
       dispatch({ type: "FETCH_FAIL" });
       toast.error(getError(err));
-        }
+    }
 
   };
 
@@ -101,23 +101,23 @@ export default function ProfileScreen() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-                  />
-         <Form.Label>Confirm New Password</Form.Label>
+          />
+          <Form.Label>Confirm New Password</Form.Label>
           <Form.Control
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-                  />
-                  <PasswordCheckList
-                      rules={["minLength", "match", "number", "letter"]}
-                      minLength={8}
-                      value={password}
-                      valueAgain={confirmPassword}
-                      onChange={(isValid) => { }}
-                  />
+          />
+          <PasswordCheckList
+            rules={["minLength", "match", "number", "letter"]}
+            minLength={8}
+            value={password}
+            valueAgain={confirmPassword}
+            onChange={(isValid) => { }}
+          />
         </Form.Group>
-        
+
 
 
         <div className="mb-3">

@@ -81,9 +81,15 @@ export default function OrderAdminScreen() {
       isDelivered = false;
     }
     try {
-      const { data } = await axios.put(`/api/orders/update/${order._id}`, {
-        isDelivered,
-      });
+      const { data } = await axios.put(
+        `/api/orders/update/${order._id}`,
+        {
+          isDelivered,
+        },
+        {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        }
+      );
       toast.success('Order Updated successfully');
     } catch (err) {
       toast.error(getError(err));

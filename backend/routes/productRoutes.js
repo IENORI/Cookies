@@ -2,6 +2,7 @@ import express from "express";
 import Product from "../models/productModel.js";
 import expressAsyncHandler from 'express-async-handler';
 import multer from 'multer';
+import { isAuth } from "../utils.js";
 
 const productRouter = express.Router();
 
@@ -42,6 +43,7 @@ productRouter.get("/:id", async (req, res) => {
 
 productRouter.put(
   '/update/:id',
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (product) {
@@ -60,6 +62,7 @@ productRouter.put(
 
 productRouter.post(
   '/add',
+  isAuth,
   upload.single('imageFile'),
   expressAsyncHandler(async (req, res) => {
     const newProduct = new Product({
@@ -79,6 +82,7 @@ productRouter.post(
 
 productRouter.delete(
   '/delete/:id',
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const id = req.params.id
     const product = await Product.findByIdAndRemove(id).exec();

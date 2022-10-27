@@ -12,7 +12,7 @@ function ProductAdmin(props) {
   const { product } = props;
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { products } = state;
+  const { products, userInfo } = state;
 
   const [name, setName] = useState(product.name);
   const [price, setPrice] = useState(product.price);
@@ -27,12 +27,18 @@ function ProductAdmin(props) {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.put(`/api/products/update/${product._id}`, {
-        name,
-        price,
-        quantity,
-        description,
-      });
+      const { data } = await axios.put(
+        `/api/products/update/${product._id}`,
+        {
+          name,
+          price,
+          quantity,
+          description,
+        },
+        {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        }
+      );
       ctxDispatch({ type: 'UPDATE_PRODUCT', payload: data });
       toast.success('Product Updated successfully');
     } catch (err) {
@@ -42,7 +48,9 @@ function ProductAdmin(props) {
   };
 
   const deleteProductHandler = async (productId) => {
-    const { data } = await axios.delete(`/api/products/delete/${productId}`);
+    const { data } = await axios.delete(`/api/products/delete/${productId}`, {
+      headers: { authorization: `Bearer ${userInfo.token}` },
+    });
     if (data === 'product deleted') {
       ctxDispatch({
         type: 'DELETE_PRODUCT',
@@ -69,7 +77,8 @@ function ProductAdmin(props) {
         </div>
         <div className="ms-2 me-auto">
           <div className="fw-bold">{product.name}</div>
-          {product.description}
+          <div className="fw-normal">{product.name}</div>
+          <div className="fw-light">Quantity: {product.countInStock}</div>
         </div>
         <div className="ms-2">
           <div className="fw-bold">${product.price}</div>
@@ -147,7 +156,10 @@ function ProductAdmin(props) {
             </Form>
           </Modal.Body>
           <Modal.Footer>
-          <Button variant="danger" onClick={() => deleteProductHandler(product._id)}>
+            <Button
+              variant="danger"
+              onClick={() => deleteProductHandler(product._id)}
+            >
               Delete
             </Button>
             <Button variant="secondary" onClick={handleClose}>

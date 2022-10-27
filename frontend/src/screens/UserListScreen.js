@@ -23,7 +23,7 @@ const reducer = (state, action) => {
 
 export default function UserListScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { userList } = state;
+  const { userList, userInfo } = state;
   const [{ loading, error }, dispatch] = useReducer(reducer, {
     loading: true,
     error: '',
@@ -34,7 +34,9 @@ export default function UserListScreen() {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
       try {
-        const result = await axios.get('/api/users');
+        const result = await axios.get('/api/users', {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        });
         ctxDispatch({ type: 'FILL_USER', payload: result.data });
         dispatch({ type: 'FETCH_SUCCESS' });
       } catch (err) {
@@ -43,7 +45,7 @@ export default function UserListScreen() {
       //setProducts(result.data);
     };
     fetchData();
-  }, [ctxDispatch]);
+  }, [ctxDispatch, userInfo]);
 
   return (
     <div>

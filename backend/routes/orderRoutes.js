@@ -82,6 +82,7 @@ orderRouter.put(
 
 orderRouter.put(
   '/update/:id',
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (order) {
@@ -96,6 +97,7 @@ orderRouter.put(
 
 orderRouter.delete(
   '/delete/:id',
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const id = req.params.id
     const order = await Order.findByIdAndRemove(id).exec();
