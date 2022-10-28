@@ -40,7 +40,7 @@ export default function ProfileScreen() {
       const conditions = [
         password === confirmPassword,
         password.length >= 8,
-        password.match(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/) != null
+        password.match(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9 #$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~ ]+)$/) != null
       ]
       if (!conditions.includes(false)) {
         const { data } = await axios.put(
