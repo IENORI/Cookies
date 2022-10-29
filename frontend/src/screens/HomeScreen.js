@@ -63,7 +63,7 @@ function HomeScreen() {
         placeholder="Search.."
         onChange={submitHandler}
       />
-      <div className="products" id="products">
+      <div className="products w-100" id="products">
         {loading ? (
           <LoadingBox />
         ) : error ? (
