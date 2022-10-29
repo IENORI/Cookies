@@ -199,7 +199,7 @@ export default function OrderAdminScreen() {
                 <th>Item</th>
                 <th>Quantity</th>
                 <th>Item Price</th>
-                <th>Total Price</th>
+                <th>Total Item Price</th>
               </tr>
             </thead>
             <tbody>
@@ -207,14 +207,51 @@ export default function OrderAdminScreen() {
                 <tr key={item.slug}>
                   <td>{item.name}</td>
                   <td>{item.quantity}</td>
-                  <td>${item.price / item.quantity}</td>
                   <td>${item.price}</td>
+                  <td>${item.price * item.quantity}</td>
                 </tr>
               ))}
             </tbody>
+            <tbody>
+              <tr>
+                <th>Subtotal</th>
+                <th></th>
+                <th></th>
+                <th>${order.itemsPrice}</th>
+              </tr>
+            </tbody>
           </table>
         </div>
-      </Card>
-    </div>
+      </Card >
+      <h3>Summary</h3>
+      <Card className="mb-3">
+        <div className="table-responsive-lg">
+          <table className='table'>
+            <tbody>
+              <tr>
+                <td>Subtotal</td>
+                <td class="text-end">${order.itemsPrice}</td>
+              </tr>
+              <tr>
+                <td>Shipping</td>
+                <td class="text-end">${order.shippingPrice}</td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <td>Taxes</td>
+                <td class="text-end">${order.taxPrice.toFixed(2)}</td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr>
+                <th>Total Price</th>
+                <th class="text-end">${order.totalPrice.toFixed(2)}</th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Card >
+    </div >
   );
 }
