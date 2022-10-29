@@ -60,7 +60,7 @@ function HomeScreen() {
       </Helmet>
       <h1>Featured Cookies!</h1>
       <input type="text" id="searchInput" placeholder="Search.." onInput={submitHandler} />
-      <div className="products">
+      <div className="products" id="products">
         {loading ? (
           <LoadingBox />
         ) : error ? (
