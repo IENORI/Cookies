@@ -24,6 +24,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+var mailOptions = {
+  to: '',
+  subject: 'Verification code',
+  html: `Error sending verification code, please try again later.`,
+};
+
 // prevent password brute force
 const loginlimiter = ratelimit({
   windowMs: 10 * 60 * 100, // 10 minutes
@@ -82,12 +88,16 @@ userRouter.post(
         // save temp_otp to user's temp_secret in database
         user.temp_secret = secret.base32;
         await user.save();
+        mailOptions['to'] = user.email;
+        mailOptions['html'] = `<h1>Your verification code is: ${temp_otp}</h1>`;
         // send email to user
-        transporter.sendMail({
-          to: user.email,
-          subject: 'Verification code',
-          html: `<h1>Your verification code is: ${temp_otp}</h1>`,
-        });
+        try {
+          const response = await transporter.sendMail(mailOptions);
+        } catch (error) {
+          //Handle error in event of malformed email, email service down etc.
+          console.log('Error sending OTP: ' + error);
+          res.status(500).send({ message: 'Unable to send verification code, please try again later' }); //500 is internal server error
+        }
         //compare password
         res.send({
           _id: user._id,
@@ -176,12 +186,16 @@ userRouter.post(
       // save temp_otp to user's temp_secret in database
       user.temp_secret = secret.base32;
       await user.save();
+      mailOptions['to'] = user.email;
+      mailOptions['html'] = `<h1>Your verification code is: ${temp_otp}</h1>`;
       // send email to user
-      transporter.sendMail({
-        to: user.email,
-        subject: 'Verification code',
-        html: `<h1>Your verification code is: ${temp_otp}</h1>`,
-      });
+      try {
+        const response = await transporter.sendMail(mailOptions);
+      } catch (error) {
+        //Handle error in event of malformed email, email service down etc.
+        console.log('Error sending OTP: ' + error);
+        res.status(500).send({ message: 'Unable to resend verification code, please try again later' }); //500 is internal server error
+      }
       res.send('Code resend');
     } else {
       res.status(404).send({ message: 'User not found' });
@@ -240,12 +254,17 @@ userRouter.post(
       // save new password generated to database
       user.password = bcrypt.hashSync(randomPassword);
       await user.save();
+      mailOptions['to'] = user.email;
+      mailOptions['subject'] = 'Password reset'
+      mailOptions['html'] = `<h1>Your new login password is:${randomPassword}</h1>`;
       // send email to user
-      transporter.sendMail({
-        to: user.email,
-        subject: 'Password reset',
-        html: `<h1>Your new login password is:${randomPassword}</h1>`,
-      });
+      try {
+        const response = await transporter.sendMail(mailOptions);
+      } catch (error) {
+        //Handle error in event of malformed email, email service down etc.
+        console.log('Error sending OTP: ' + error);
+        res.status(500).send({ message: 'Unable to send new password, please try again later' }); //500 is internal server error
+      }
       res.send(`New password have been sent to ${user.email}`);
     } else {
       res.status(404).send({ message: 'Email does not exist' });
