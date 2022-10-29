@@ -10,6 +10,7 @@ import dotenv from 'dotenv';
 import passwordgenerator from 'generate-password';
 import { v1 as uuid } from 'uuid';
 import ratelimit from 'express-rate-limit';
+import * as EmailValidator from 'email-validator';
 
 dotenv.config(); //to fetch variables
 
@@ -24,6 +25,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// for storing mail options
 var mailOptions = {
   to: '',
   subject: 'Verification code',
@@ -75,6 +77,12 @@ userRouter.post(
       res.status(401).send({ message: 'Captcha Error' }); //401 is unauthorized
     }
 
+    // validate email format
+    if (!EmailValidator.validate(req.body.email)) {
+      res.status(400).send({ message: 'Invalid email format!' });
+      return;
+    }
+
     const user = await User.findOne({ email: req.body.email }); //return document found
     if (user) {
       //if user exist
@@ -119,6 +127,11 @@ userRouter.post(
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password),
     });
+    // validate email format
+    if (!EmailValidator.validate(newUser['email'])) {
+      res.status(400).send({ message: 'Invalid email format!' });
+      return;
+    }
     const loginId = uuid(); // generate unique login id
     // saving generated login id to database
     newUser.login_id = loginId;
@@ -139,6 +152,11 @@ userRouter.put(
   '/profile',
   isAuth,
   expressAsyncHandler(async (req, res) => {
+    // validate email format
+    if (!EmailValidator.validate(req.body.email)) {
+      res.status(400).send({ message: 'Invalid email format!' });
+      return;
+    }
     const user = await User.findById(req.user._id); //you can do it like this because it was passed over from the isAuth
     if (user) {
       //if user is found
@@ -243,6 +261,11 @@ userRouter.post(
 userRouter.post(
   '/resetpassword',
   expressAsyncHandler(async (req, res) => {
+    // validate email format
+    if (!EmailValidator.validate(req.body.email)) {
+      res.status(400).send({ message: 'Invalid email format!' });
+      return;
+    }
     const user = await User.findOne({ email: req.body.email });
     if (user) {
       // generate random password
@@ -264,7 +287,7 @@ userRouter.post(
         const response = await transporter.sendMail(mailOptions);
       } catch (error) {
         //Handle error in event of malformed email, email service down etc.
-        console.log('Error sending OTP: ' + error);
+        console.log('Error sending new password: ' + error);
         res.status(500).send({ message: 'Unable to send new password, please try again later' }); //500 is internal server error
         return;
       }
