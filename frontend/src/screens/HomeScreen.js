@@ -20,20 +20,27 @@ const reducer = (state, action) => {
   }
 };
 
+
+
 function HomeScreen() {
   const [{ loading, error, products }, dispatch] = useReducer(reducer, {
     products: [],
     loading: true,
     error: "",
   });
-    const submitHandler = async (e) => {     
-      var value = document.getElementById("searchInput").value;
-      var data_filter = products.filter((element) => element.name.toLowerCase().includes(value.toLowerCase()));
+
+  const submitHandler = async (e) => {
+    const { value } = e.target;
+    try {
+      const result = await axios.get("/api/products");
+      dispatch({ type: "FETCH_SUCCESS", payload: result.data });
+      const data_filter = result.data.filter((element) => element.name.toLowerCase().includes(value.toLowerCase()));
       dispatch({ type: "FETCH_SUCCESS", payload: data_filter });
-      document.getElementById('searchInput').value = '';
+    } catch (err) {
+      dispatch({ type: "FETCH_FAIL", payload: err.message });
+    }
   };
 
-  //const [products, setProduct] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       dispatch({ type: "FETCH_REQUEST" });
@@ -52,8 +59,7 @@ function HomeScreen() {
         <title>Cookies!</title>
       </Helmet>
       <h1>Featured Cookies!</h1>
-          <input type="text" id="searchInput" placeholder="Search.." />
-          <button type="submit" onClick={submitHandler}><i className="fa fa-search"></i></button>
+      <input type="text" id="searchInput" placeholder="Search.." onInput={submitHandler} />
       <div className="products">
         {loading ? (
           <LoadingBox />
