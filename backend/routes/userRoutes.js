@@ -97,6 +97,7 @@ userRouter.post(
           //Handle error in event of malformed email, email service down etc.
           console.log('Error sending OTP: ' + error);
           res.status(500).send({ message: 'Unable to send verification code, please try again later' }); //500 is internal server error
+          return;
         }
         //compare password
         res.send({
@@ -195,6 +196,7 @@ userRouter.post(
         //Handle error in event of malformed email, email service down etc.
         console.log('Error sending OTP: ' + error);
         res.status(500).send({ message: 'Unable to resend verification code, please try again later' }); //500 is internal server error
+        return;
       }
       res.send('Code resend');
     } else {
@@ -264,6 +266,7 @@ userRouter.post(
         //Handle error in event of malformed email, email service down etc.
         console.log('Error sending OTP: ' + error);
         res.status(500).send({ message: 'Unable to send new password, please try again later' }); //500 is internal server error
+        return;
       }
       res.send(`New password have been sent to ${user.email}`);
     } else {
