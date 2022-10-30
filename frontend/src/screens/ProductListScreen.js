@@ -52,7 +52,6 @@ export default function ProductListScreen() {
       const result = await axios.get('/api/products');
       ctxDispatch({ type: 'FILL_PRODUCTS', payload: result.data });
       dispatch({ type: 'FETCH_SUCCESS' });
-      console.log(result.data);
       const data_filter = result.data.filter((element) =>
         element.name.toLowerCase().includes(value.toLowerCase())
       );
@@ -71,7 +70,9 @@ export default function ProductListScreen() {
         ctxDispatch({ type: 'FILL_PRODUCTS', payload: result.data });
         dispatch({ type: 'FETCH_SUCCESS' });
       } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: err.message });
+        dispatch({ 
+          type: 'FETCH_FAIL', 
+          payload: err.message });
       }
     };
     fetchData();
@@ -79,7 +80,7 @@ export default function ProductListScreen() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    const imagePath = '/images/' + imageFile.name.replace(/\s/g, '');
+    const imagePath = "https://3x03-cookies.sgp1.digitaloceanspaces.com/default.png";
     try {
       const { data } = await axios.post(
         '/api/products/add',
@@ -102,7 +103,7 @@ export default function ProductListScreen() {
       ctxDispatch({ type: 'ADD_PRODUCT', payload: data });
       handleClose();
     } catch (err) {
-      toast.error('failed to upload');
+      toast.error('Failed to create listing');
     }
   };
   return (
@@ -111,7 +112,11 @@ export default function ProductListScreen() {
         <title>Product List</title>
       </Helmet>
       <h1>Product List</h1>
-      <input type="text" placeholder="Search.." onInput={filterHandler} />
+      <input
+        type="text"
+        id="psearchInput"
+        placeholder="Search.."
+        onInput={filterHandler} />
       <div className="mb-3 text-end">
         <Button variant="primary" onClick={handleShow}>
           Create
@@ -123,110 +128,117 @@ export default function ProductListScreen() {
         </Modal.Header>
         <Modal.Body className="show-grid">
           <Container>
-            <Form>
+            <Form onSubmit={submitHandler}>
               <Row>
-                <Col xs={6} md={6}>
-                  <Form.Label>Image</Form.Label>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Product Name</Form.Label>
                   <Form.Control
-                    type="file"
-                    className="h-50"
-                    onChange={(e) => setImageFile(e.target.files[0])}
+                    type="text"
+                    value={name}
+                    autoFocus
+                    placeholder="Cookie Name"
+                    onChange={(e) => setName(e.target.value)}
+                    required
                   />
-                </Col>
-                <Col xs={6} md={6}>
-                  <Form.Group
-                    className="mb-3"
-                    controlId="exampleForm.ControlInput1"
-                  >
-                    <Form.Label>Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={name}
-                      autoFocus
-                      placeholder="Name"
-                      onChange={(e) => setName(e.target.value)}
-                      required
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-
-              <Row>
-                <Col xs={6} md={6}>
-                  <Form.Group
-                    className="mb-3"
-                    controlId="exampleForm.ControlInput1"
-                  >
-                    <Form.Label>Category</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={category}
-                      autoFocus
-                      placeholder="Category"
-                      onChange={(e) => setCategory(e.target.value)}
-                      required
-                    />
-                  </Form.Group>
-                </Col>
-                <Col xs={6} md={6}>
-                  <Form.Group
-                    className="mb-3"
-                    controlId="exampleForm.ControlInput1"
-                  >
-                    <Form.Label>Price</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={price}
-                      autoFocus
-                      placeholder="Price"
-                      onChange={(e) => setPrice(e.target.value)}
-                      required
-                    />
-                  </Form.Group>
-                </Col>
+                </Form.Group>
               </Row>
               <Row>
                 <Col xs={6} md={6}>
-                  <Form.Group
-                    className="mb-3"
-                    controlId="exampleForm.ControlInput1"
-                  >
-                    <Form.Label>Quantity</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={quantity}
-                      autoFocus
-                      placeholder="Stock"
-                      onChange={(e) => setQuantity(e.target.value)}
-                      required
-                    />
-                  </Form.Group>
+                  <Row>
+                    <Form.Group
+                      className="mb-3">
+                      <Form.Label>Image</Form.Label>
+                      <Form.Control
+                        required
+                        name="imageFile"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setImageFile(e.target.files[0])}
+                      />
+                    </Form.Group>
+                  </Row>
+                  <Row>
+                    <Form.Group
+                      className="mb-3"
+                      controlId="exampleForm.ControlInput1"
+                    >
+                      <Form.Label>Price</Form.Label>
+                      <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <Form.Control
+                          type="number"
+                          value={price}
+                          min="0.00"
+                          step="0.01"
+                          autoFocus
+                          placeholder="Cost Per Unit"
+                          onChange={(e) => setPrice(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </Form.Group>
+                  </Row>
+                  <Row>
+                    <Form.Group
+                      className="mb-3"
+                      controlId="exampleForm.ControlInput1"
+                    >
+                      <Form.Label>Quantity</Form.Label>
+                      <Form.Control
+                        type="number"
+                        value={quantity}
+                        min="1"
+                        autoFocus
+                        placeholder="Available Quantity"
+                        onChange={(e) => setQuantity(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                  </Row>
                 </Col>
                 <Col xs={6} md={6}>
-                  <Form.Group
-                    className="mb-3"
-                    controlId="exampleForm.ControlTextarea1"
-                  >
-                    <Form.Label>Description</Form.Label>
-                    <Form.Control
-                      as="textarea"
-                      value={description}
-                      placeholder="description"
-                      onChange={(e) => setDescription(e.target.value)}
-                      rows={3}
-                      required
-                    />
-                  </Form.Group>
+                  <Row>
+                    <Form.Group
+                      className="mb-3"
+                      controlId="exampleForm.ControlInput1"
+                    >
+                      <Form.Label>Category</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={category}
+                        autoFocus
+                        placeholder="Category"
+                        onChange={(e) => setCategory(e.target.value)}
+                        required
+                      />
+                    </Form.Group>
+                  </Row>
+                  <Row>
+                    <Form.Group
+                      className="mb-3"
+                      controlId="exampleForm.ControlTextarea1"
+                    >
+                      <Form.Label>Description</Form.Label>
+                      <Form.Control
+                        as="textarea"
+                        value={description}
+                        placeholder="Description"
+                        onChange={(e) => setDescription(e.target.value)}
+                        rows={3}
+                        required
+                      />
+                    </Form.Group>
+                  </Row>
                 </Col>
+              </Row>
+              <Row>
+                <Button type="submit" variant="primary">
+                  Save Changes
+                </Button>
               </Row>
             </Form>
           </Container>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={submitHandler}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
       </Modal>
       <div className="products">
         {loading ? (

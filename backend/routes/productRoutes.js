@@ -2,20 +2,36 @@ import express from "express";
 import Product from "../models/productModel.js";
 import expressAsyncHandler from 'express-async-handler';
 import multer from 'multer';
+import multerS3 from 'multer-s3';
+import aws from 'aws-sdk';
 import { isAuth } from "../utils.js";
+import dotenv from "dotenv";
+
+dotenv.config(); //to fetch variables
 
 const productRouter = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, '../frontend/public/images');
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname.replace(/\s/g, ''));
-  },
+const spaceEndPoint = new aws.Endpoint(process.env.SPACES_ENDPOINT);
+const s3 = new aws.S3({
+  endpoint: spaceEndPoint,
+  accessKeyId: process.env.SPACES_ACCESS_KEY_ID,
+  secretAccessKey: process.env.SPACES_SECRET_ACCESS_KEY
 });
 
-const upload = multer({ storage: storage });
+const S3URL = "https://" + process.env.SPACES_BUCKET + "." + process.env.SPACES_ENDPOINT + "/"
+var dynamicFileName;
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: process.env.SPACES_BUCKET,
+    acl: "public-read",
+    key: function (request, file, cb) {
+      const fileName = file.originalname + "-" + String(Date.now()) + ".png";
+      dynamicFileName = fileName;
+      cb(null, fileName);
+    }
+  })
+});
 
 //the / appends onto the app.use route that is called
 productRouter.get("/", async (req, res) => {
@@ -55,7 +71,7 @@ productRouter.put(
       const updatedProducts = await Product.find();
       res.send(updatedProducts);
     } else {
-      res.status(404).send({ message: 'Prouct not found' });
+      res.status(404).send({ message: 'Product not found' });
     }
   })
 );
@@ -68,7 +84,7 @@ productRouter.post(
     const newProduct = new Product({
       name: req.body.name,
       slug: req.body.name,
-      image: req.body.imagePath,
+      image: S3URL + dynamicFileName,
       category: req.body.category,
       description: req.body.description,
       price: req.body.price,
@@ -86,7 +102,7 @@ productRouter.delete(
   expressAsyncHandler(async (req, res) => {
     const id = req.params.id
     const product = await Product.findByIdAndRemove(id).exec();
-    res.send("product deleted");
+    res.send("Product deleted");
     return;
   })
 );

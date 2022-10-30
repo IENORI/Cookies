@@ -3,12 +3,10 @@ import Col from "react-bootstrap/esm/Col";
 import Row from "react-bootstrap/esm/Row";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
-import MessageBox from "../components/MessageBox";
 import { Store } from "../Store";
 import ListGroup from "react-bootstrap/ListGroup";
 import Button from "react-bootstrap/esm/Button";
 import Card from "react-bootstrap/Card";
-import ListGroupItem from "react-bootstrap/esm/ListGroupItem";
 import axios from "axios";
 
 export default function CartScreen() {
@@ -48,7 +46,13 @@ export default function CartScreen() {
         <Col md={8}>
           {cartItems.length === 0 ? (
             <span>
-              Cart is empy. <Link to="/">Go Shopping</Link>{" "}
+              Cart is empty.
+              <a href="/">
+                <br></br>
+                <Button>
+                  Go Shopping
+                </Button>
+              </a>
             </span>
           ) : (
             <ListGroup>
@@ -127,6 +131,6 @@ export default function CartScreen() {
           </Card>
         </Col>
       </Row>
-    </div>
+    </div >
   );
 }
