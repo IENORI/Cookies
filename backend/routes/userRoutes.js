@@ -35,7 +35,7 @@ var mailOptions = {
 // prevent password brute force
 const loginlimiter = ratelimit({
   windowMs: 10 * 60 * 100, // 10 minutes
-  max: 3, // limit each IP to 5 requests per `window` (here, per 10 minutes)
+  max: 5, // limit each IP to 5 requests per `window` (here, per 10 minutes)
   standardHeaders: true, // return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // disable the `X-RateLimit-*` headers
   statusCode: 401,
@@ -147,6 +147,79 @@ userRouter.post(
     });
   })
 );
+
+//sign api for testing
+userRouter.post(
+  '/signintest', loginlimiter,
+  expressAsyncHandler(async (req, res) => {
+    if(req.ip != "::ffff:127.0.0.1"){
+      res.status(401).send({ message: "Access denied" });
+    }
+    //Destructuring response token from request body
+    const token = req.body.token;
+    //sends secret key and response token to google
+    try {
+      let result = await axios({
+        method: 'post',
+        url: 'https://www.google.com/recaptcha/api/siteverify',
+        params: {
+          secret: process.env.CAPTCHA_TESTING_KEY,
+          response: token,
+        },
+      });
+      let data = result.data || {};
+      if (!data.success) {
+        throw {
+          success: false,
+          error: 'response not valid',
+        };
+      }
+    } catch (err) {
+      res.status(401).send({ message: 'Captcha Error' }); //401 is unauthorized
+    }
+
+    // validate email format
+    if (!EmailValidator.validate(req.body.email)) {
+      res.status(400).send({ message: 'Invalid email format!' });
+      return;
+    }
+
+    const user = await User.findOne({ email: req.body.email }); //return document found
+    if (user) {
+      //if user exist
+      if (bcrypt.compareSync(req.body.password, user.password)) {
+        // generate otp
+        const secret = speakeasy.generateSecret({ length: 20 });
+        const temp_otp = speakeasy.totp({
+          secret: secret.base32,
+          encoding: 'base32',
+        });
+        // save temp_otp to user's temp_secret in database
+        user.temp_secret = secret.base32;
+        await user.save();
+        mailOptions['to'] = user.email;
+        mailOptions['html'] = `<h1>Your verification code is: ${temp_otp}</h1>`;
+        // send email to user
+        try {
+          const response = await transporter.sendMail(mailOptions);
+        } catch (error) {
+          //Handle error in event of malformed email, email service down etc.
+          console.log('Error sending OTP: ' + error);
+          res.status(500).send({ message: 'Unable to send verification code, please try again later' }); //500 is internal server error
+          return;
+        }
+        //compare password
+        res.send({
+          _id: user._id,
+          email: user.email,
+        });
+        return; //no need to continue after this
+      }
+    }
+    res.status(401).send({ message: 'Invalid email or password' }); //401 is unauthorized
+  })
+);
+
 
 userRouter.put(
   '/profile',
