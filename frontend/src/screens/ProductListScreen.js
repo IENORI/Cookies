@@ -46,6 +46,23 @@ export default function ProductListScreen() {
     error: '',
   });
 
+  const filterHandler = async (e) => {
+    const { value } = e.target;
+    try {
+      const result = await axios.get('/api/products');
+      ctxDispatch({ type: 'FILL_PRODUCTS', payload: result.data });
+      dispatch({ type: 'FETCH_SUCCESS' });
+      console.log(result.data);
+      const data_filter = result.data.filter((element) =>
+        element.name.toLowerCase().includes(value.toLowerCase())
+      );
+      ctxDispatch({ type: 'FILL_PRODUCTS', payload: data_filter });
+      dispatch({ type: 'FETCH_SUCCESS' });
+    } catch (err) {
+      dispatch({ type: 'FETCH_FAIL', payload: err.message });
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
@@ -78,9 +95,9 @@ export default function ProductListScreen() {
         {
           headers: {
             'content-type': 'multipart/form-data',
-            'authorization': `Bearer ${userInfo.token}`
+            authorization: `Bearer ${userInfo.token}`,
           },
-        },
+        }
       );
       ctxDispatch({ type: 'ADD_PRODUCT', payload: data });
       handleClose();
@@ -94,6 +111,7 @@ export default function ProductListScreen() {
         <title>Product List</title>
       </Helmet>
       <h1>Product List</h1>
+      <input type="text" placeholder="Search.." onInput={filterHandler} />
       <div className="mb-3 text-end">
         <Button variant="primary" onClick={handleShow}>
           Create
@@ -223,13 +241,21 @@ export default function ProductListScreen() {
         ) : error ? (
           <MessageBox variant="danger">{error}</MessageBox>
         ) : (
-          <Row>
-            {products.map((product) => (
-              <Col key={product.slug} sm={12} md={12} lg={12} className="mb-3">
-                <ProductAdmin product={product}></ProductAdmin>
-              </Col>
-            ))}
-          </Row>
+          <Container>
+            <Row>
+              {products.map((product) => (
+                <Col
+                  key={product.slug}
+                  sm={12}
+                  md={12}
+                  lg={12}
+                  className="mb-3"
+                >
+                  <ProductAdmin product={product}></ProductAdmin>
+                </Col>
+              ))}
+            </Row>
+          </Container>
         )}
       </div>
     </div>

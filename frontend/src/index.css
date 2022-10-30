@@ -60,3 +60,13 @@ main {
   font-weight: 200;
   margin: 10px 5px;
 }
+
+#searchInput{
+  float: right;
+  padding:8px;
+  border-radius: 10px;
+}
+
+#products{
+  float: left;
+}
