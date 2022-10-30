@@ -16,7 +16,6 @@ describe('sign in unit test', function () {
           },
         },
         function (error, response, body) {
-          console.log(response.body);
           expect(response.statusCode).to.equal(401);
           done();
         }
@@ -53,7 +52,6 @@ describe('sign in unit test', function () {
           },
         },
         function (error, response, body) {
-          console.log(response.body);
           expect(JSON.parse(response.body).message).to.equal(
             'Invalid email format!'
           );
@@ -76,7 +74,6 @@ describe('sign in unit test', function () {
           },
         },
         function (error, response, body) {
-          console.log(response.body);
           expect(JSON.parse(response.body).message).to.equal(
             'Invalid email or password'
           );
@@ -99,7 +96,6 @@ describe('sign in unit test', function () {
           },
         },
         function (error, response, body) {
-          console.log(response.body);
           expect(JSON.parse(response.body).message).to.equal(
             'Invalid email or password'
           );
@@ -122,7 +118,6 @@ describe('sign in unit test', function () {
           },
         },
         function (error, response, body) {
-          console.log(response.body);
           expect(
             JSON.parse(response.body).hasOwnProperty('_id', 'email')
           ).to.equal(true);
@@ -143,7 +138,6 @@ describe('sign in unit test', function () {
           },
         },
         function (error, response, body) {
-          console.log(response.body);
           expect(response.body).to.equal('Code resend');
         }
       );
