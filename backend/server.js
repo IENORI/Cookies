@@ -1,5 +1,5 @@
 import express from "express";
-import data from "./data.js";
+// import data from "./data.js";
 import cors from 'cors';
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -44,4 +44,8 @@ app.use((err, req, res, next) => {
 const port = process.env.PORT || 5000;
 app.listen(port, (req, res) => {
   console.log(`Server is up at: http://localhost:${port}`);
+});
+
+process.on('SIGINT', function() {
+  process.exit();
 });
