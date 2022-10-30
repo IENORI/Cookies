@@ -34,8 +34,8 @@ var mailOptions = {
 
 // prevent password brute force
 const loginlimiter = ratelimit({
-  windowMs: 10 * 60 * 100, // 10 minutes
-  max: 5, // limit each IP to 5 requests per `window` (here, per 10 minutes)
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 3, // limit each IP to 5 requests per `window` (here, per 10 minutes)
   standardHeaders: true, // return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // disable the `X-RateLimit-*` headers
   statusCode: 401,
