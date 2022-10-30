@@ -41,7 +41,7 @@ function reducer(state, action) {
       const cartItems = state.cart.cartItems.filter(
         (item) => item._id !== action.payload._id
       );
-      localStorage.setItem('cartItem', JSON.stringify(cartItems)); //key, value ; to save in local storage so can refresh
+      localStorage.setItem('cartItems', JSON.stringify(cartItems)); //key, value ; to save in local storage so can refresh
       return { ...state, cart: { ...state.cart, cartItems } };
     }
     case 'CART_CLEAR':
