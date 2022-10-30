@@ -230,15 +230,20 @@ userRouter.put(
       res.status(400).send({ message: 'Invalid email format!' });
       return;
     }
+
     const user = await User.findById(req.user._id); //you can do it like this because it was passed over from the isAuth
     if (user) {
       //if user is found
       user.name = req.body.name || user.name; //if requested to change, set it to the requested one, else take the default from db
       user.email = req.body.email || user.email;
-      if (req.body.password) {
-        user.password = bcrypt.hashSync(req.body.password, 8); //8 is the salt
+      if (bcrypt.compareSync(req.body.oldpassword, user.password)) {
+        if (req.body.password) {
+          user.password = bcrypt.hashSync(req.body.password, 8); //8 is the salt
+        }
       }
-
+      else {
+        res.status(404).send({ message: 'Update failed'});
+      }
       const updatedUser = await user.save();
       res.send({
         _id: updatedUser._id,
@@ -375,14 +380,14 @@ userRouter.post(
   '/checkloginid',
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.body.userId);
-    if(user){
+    if (user) {
       const login_id = req.body.loginId;
-      if(login_id === user.login_id){ // if user's login id is different from saved login id in database
+      if (login_id === user.login_id) { // if user's login id is different from saved login id in database
         res.send('No new login attempt');
-      }else{
+      } else {
         res.status(404).send({ message: 'Your account has been logged in on another device' })
       }
-    }else{
+    } else {
       res.status(404).send({ message: 'Your account has been removed' });
     }
   })
@@ -397,12 +402,13 @@ userRouter.put(
       user.name = req.body.name || user.name;
       user.email = req.body.email || user.email;
       const updatedUser = await user.save();
-      const updatedUsers = await User.find({isAdmin: false});
+      const updatedUsers = await User.find({ isAdmin: false });
       res.send(updatedUsers);
     } else {
       res.status(404).send({ message: 'User not found' });
     }
   })
 );
+
 
 export default userRouter;
