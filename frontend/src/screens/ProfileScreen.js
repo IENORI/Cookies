@@ -29,6 +29,7 @@ export default function ProfileScreen() {
   const [email, setEmail] = useState(userInfo.email);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [oldpassword, setOldPassword]= useState("");
 
   const [{ loadingUpdate }, dispatch] = useReducer(reducer, {
     loadingUpdate: false,
@@ -48,6 +49,7 @@ export default function ProfileScreen() {
           {
             name,
             email,
+            oldpassword,
             password,
           },
           {
@@ -90,6 +92,16 @@ export default function ProfileScreen() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="oldpassword">
+          <Form.Label>Old Password</Form.Label>
+          <Form.Control
+            type="password"
+            value={oldpassword}
+            onChange={(e) => setOldPassword(e.target.value)}
             required
           />
         </Form.Group>
