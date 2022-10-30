@@ -45,3 +45,7 @@ const port = process.env.PORT || 5000;
 app.listen(port, (req, res) => {
   console.log(`Server is up at: http://localhost:${port}`);
 });
+
+process.on('SIGINT', function() {
+  process.exit();
+});
