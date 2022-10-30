@@ -45,35 +45,60 @@ function App() {
   };
   return (
     <BrowserRouter>
-      {userInfo ? <CheckDeviceLogin></CheckDeviceLogin> : null} {/*Create check device login component when user is logged in*/}
-      {userInfo ? <AutoLogout></AutoLogout> : null} {/*Create auto logout component when user is logged in*/}
+      {userInfo ? <CheckDeviceLogin></CheckDeviceLogin> : null}{' '}
+      {/*Create check device login component when user is logged in*/}
+      {userInfo ? <AutoLogout></AutoLogout> : null}{' '}
+      {/*Create auto logout component when user is logged in*/}
       <div className="d-flex flex-column site-container">
         <ToastContainer position="bottom-center" limit={1} />
         <header>
           <NavBar bg="dark" variant="dark" expand="lg">
             <Container>
-              <LinkContainer to="/">
-                <NavBar.Brand>Cookies</NavBar.Brand>
-              </LinkContainer>
+              {!userInfo ? (
+                <LinkContainer to="/">
+                  <NavBar.Brand>Cookies</NavBar.Brand>
+                </LinkContainer>
+              ) : userInfo.isAdmin ? (
+                <LinkContainer to="/admin/productlist">
+                  <NavBar.Brand>Cookies</NavBar.Brand>
+                </LinkContainer>
+              ) : (
+                <LinkContainer to="/">
+                  <NavBar.Brand>Cookies</NavBar.Brand>
+                </LinkContainer>
+              )}
               <NavbarToggle ariacontrols="basic-navbar-nav" />
               <NavbarCollapse id="basic-navbar-nav">
                 <Nav className="me-auto w-100 justify-content-end">
-                  <Link to="/cart" className="nav-link">
-                    Cart
-                    {cart.cartItems.length > 0 && (
-                      <Badge pill bg="danger">
-                        {cart.cartItems.reduce((a, c) => a + c.quantity, 0)}
-                      </Badge>
-                    )}
-                  </Link>
+                  {!userInfo ? (
+                    <Link to="/cart" className="nav-link">
+                      Cart
+                      {cart.cartItems.length > 0 && (
+                        <Badge pill bg="danger">
+                          {cart.cartItems.reduce((a, c) => a + c.quantity, 0)}
+                        </Badge>
+                      )}
+                    </Link>
+                  ) : !userInfo.isAdmin ? (
+                    <Link to="/cart" className="nav-link">
+                      Cart
+                      {cart.cartItems.length > 0 && (
+                        <Badge pill bg="danger">
+                          {cart.cartItems.reduce((a, c) => a + c.quantity, 0)}
+                        </Badge>
+                      )}
+                    </Link>
+                  ) : null}
                   {userInfo ? (
                     <NavDropDown title={userInfo.name} id="basic-nav-dropdown">
                       <LinkContainer to="/profile">
                         <NavDropDown.Item>User Profile</NavDropDown.Item>
                       </LinkContainer>
-                      <LinkContainer to="/orderhistory">
-                        <NavDropDown.Item>Order History</NavDropDown.Item>
-                      </LinkContainer>
+                      {!userInfo.isAdmin ? (
+                        <LinkContainer to="/orderhistory">
+                          <NavDropDown.Item>Order History</NavDropDown.Item>
+                        </LinkContainer>
+                      ) : null}
                       <NavDropDown.Divider />
                       <Link
                         to="#signout"
@@ -108,58 +133,85 @@ function App() {
         </header>
         <main>
           <Container className="mt-3">
-            <Routes>
-              <Route path="/" element={<HomeScreen />} />
-              <Route path="/cart" element={<CartScreen />} />
-              <Route path="/signin" element={<SigninScreen />} />
-              <Route path="/verify" element={<OTPScreen />} />
-              <Route
-                path="/forgotpassword"
-                element={<ForgotPasswordScreen />}
-              />
-              <Route path="/product/:slug" element={<ProductScreen />} />
-              <Route path="/shipping" element={<ShippingAddressScreen />} />
-              <Route path="/signup" element={<SignupScreen />} />
-              <Route path="/payment" element={<PaymentMethodScreen />} />
-              <Route path="/placeorder" element={<PlaceOrderScreen />} />
-              <Route path="/order/:id" element={<OrderScreen />} />
-              <Route path="/orderhistory" element={<OrderHistoryScreen />} />
-              <Route path="/profile" element={<ProfileScreen />} />
-              {/* Admin Routes */}
-              <Route
-                path="/admin/productlist"
-                element={
-                  <AdminRoute>
-                    <ProductListScreen />
-                  </AdminRoute>
-                }
-              ></Route>
-              <Route
-                path="/admin/orderlist"
-                element={
-                  <AdminRoute>
-                    <OrderManageScreen />
-                  </AdminRoute>
-                }
-              ></Route>
-              <Route
-                path="/admin/orderlist/:id"
-                element={
-                  <AdminRoute>
-                    <OrderAdminScreen />
-                  </AdminRoute>
-                }
-              ></Route>
-              <Route
-                path="/admin/userlist"
-                element={
-                  <AdminRoute>
-                    <UserListScreen />
-                  </AdminRoute>
-                }
-              ></Route>
-              <Route path="/" element={<HomeScreen />} />
-            </Routes>
+            {!userInfo ? ( // guest that are not logged in
+              <Routes>
+                <Route path="/" element={<HomeScreen />} />
+                <Route path="/cart" element={<CartScreen />} />
+                <Route path="/signin" element={<SigninScreen />} />
+                <Route path="/verify" element={<OTPScreen />} />
+                <Route
+                  path="/forgotpassword"
+                  element={<ForgotPasswordScreen />}
+                />
+                <Route path="/product/:slug" element={<ProductScreen />} />
+                <Route path="/shipping" element={<ShippingAddressScreen />} />
+                <Route path="/signup" element={<SignupScreen />} />
+                <Route path="/payment" element={<PaymentMethodScreen />} />
+                <Route path="/placeorder" element={<PlaceOrderScreen />} />
+                <Route path="/order/:id" element={<OrderScreen />} />
+                <Route path="/orderhistory" element={<OrderHistoryScreen />} />
+                <Route path="/profile" element={<ProfileScreen />} />
+              </Routes>
+            ) : userInfo && userInfo.isAdmin ? ( // logged in admin
+              <Routes>
+                <Route path="/signup" element={<SignupScreen />} />
+                <Route path="/profile" element={<ProfileScreen />} />
+                <Route path="/signin" element={<SigninScreen />} />
+                <Route path="/verify" element={<OTPScreen />} />
+                {/* Admin Routes */}
+                <Route
+                  path="/admin/productlist"
+                  element={
+                    <AdminRoute>
+                      <ProductListScreen />
+                    </AdminRoute>
+                  }
+                ></Route>
+                <Route
+                  path="/admin/orderlist"
+                  element={
+                    <AdminRoute>
+                      <OrderManageScreen />
+                    </AdminRoute>
+                  }
+                ></Route>
+                <Route
+                  path="/admin/orderlist/:id"
+                  element={
+                    <AdminRoute>
+                      <OrderAdminScreen />
+                    </AdminRoute>
+                  }
+                ></Route>
+                <Route
+                  path="/admin/userlist"
+                  element={
+                    <AdminRoute>
+                      <UserListScreen />
+                    </AdminRoute>
+                  }
+                ></Route>
+              </Routes>
+            ) : userInfo && !userInfo.isAdmin ? ( // logged in normal user
+              <Routes>
+                <Route path="/" element={<HomeScreen />} />
+                <Route path="/cart" element={<CartScreen />} />
+                <Route path="/signin" element={<SigninScreen />} />
+                <Route path="/verify" element={<OTPScreen />} />
+                <Route
+                  path="/forgotpassword"
+                  element={<ForgotPasswordScreen />}
+                />
+                <Route path="/product/:slug" element={<ProductScreen />} />
+                <Route path="/shipping" element={<ShippingAddressScreen />} />
+                <Route path="/signup" element={<SignupScreen />} />
+                <Route path="/payment" element={<PaymentMethodScreen />} />
+                <Route path="/placeorder" element={<PlaceOrderScreen />} />
+                <Route path="/order/:id" element={<OrderScreen />} />
+                <Route path="/orderhistory" element={<OrderHistoryScreen />} />
+                <Route path="/profile" element={<ProfileScreen />} />
+              </Routes>
+            ) : null}
           </Container>
         </main>
         <footer>

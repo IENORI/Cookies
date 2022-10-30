@@ -49,7 +49,11 @@ export default function OTPScreen() {
       //after successful verification
       ctxDispatch({ type: 'USER_SIGNIN', payload: data }); //payload that is passed along with action
       localStorage.setItem('userInfo', JSON.stringify(data));
-      navigate('/'); //redirect home screen
+      if (data.isAdmin === true){
+        navigate('/admin/productlist'); //redirect home screen
+      }else{
+        navigate('/'); //redirect home screen
+      }
     } catch (err) {
       toast.error(getError(err));
     }
