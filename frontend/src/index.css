@@ -67,6 +67,12 @@ main {
   border-radius: 10px;
 }
 
+#psearchInput{
+  float: left;
+  padding:8px;
+  border-radius: 10px;
+}
+
 #products{
   float: left;
 }

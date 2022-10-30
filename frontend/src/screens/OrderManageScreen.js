@@ -31,12 +31,28 @@ export default function OrderManageScreen() {
     error: '',
   });
 
+  const filterHandler = async (e) => {
+    const { value } = e.target;
+    try {
+      const result = await axios.get('/api/orders/orders');
+      ctxDispatch({ type: 'FILL_ORDERS', payload: result.data });
+      dispatch({ type: 'FETCH_SUCCESS' });
+      const data_filter = result.data.filter((element) =>
+        element.shippingAddress.fullName.toLowerCase().includes(value.toLowerCase())
+      );
+      ctxDispatch({ type: 'FILL_ORDERS', payload: data_filter });
+      dispatch({ type: 'FETCH_SUCCESS' });
+    } catch (err) {
+      dispatch({ type: 'FETCH_FAIL', payload: err.message });
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
       try {
-        const { data } = await axios.get(`/api/orders/orders`, {});
-        ctxDispatch({ type: 'FILL_ORDERS', payload: data });
+        const result = await axios.get(`/api/orders/orders`, {});
+        ctxDispatch({ type: 'FILL_ORDERS', payload: result.data });
         dispatch({ type: 'FETCH_SUCCESS' });
       } catch (error) {
         dispatch({
@@ -69,8 +85,12 @@ export default function OrderManageScreen() {
       <Helmet>
         <title>Order Management</title>
       </Helmet>
-
       <h1>Order Management</h1>
+      <input
+        type="text"
+        id="psearchInput"
+        placeholder="Search.."
+        onInput={filterHandler} />
       {loading ? (
         <LoadingBox></LoadingBox>
       ) : error ? (

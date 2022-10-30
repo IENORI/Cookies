@@ -2,6 +2,8 @@ import Button from 'react-bootstrap/Button';
 import { useContext, useState } from 'react';
 import { Store } from '../Store';
 import axios from 'axios';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
@@ -51,16 +53,19 @@ function ProductAdmin(props) {
     const { data } = await axios.delete(`/api/products/delete/${productId}`, {
       headers: { authorization: `Bearer ${userInfo.token}` },
     });
-    if (data === 'product deleted') {
+    if (data === 'Product deleted') {
       ctxDispatch({
         type: 'DELETE_PRODUCT',
         payload: products.filter((product) => {
           return product._id !== productId;
         }),
       });
-      handleClose();
     }
+    handleClose();
     toast.success(data);
+    setTimeout(function () {
+      window.location.reload(false);
+    }, 3000)
     return;
   };
 
@@ -96,78 +101,85 @@ function ProductAdmin(props) {
             <Modal.Title>{name}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form>
-              <Form.Group
-                className="mb-3"
-                controlId="exampleForm.ControlInput1"
-              >
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={name}
-                  autoFocus
-                  placeholder="name"
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </Form.Group>
-              <Form.Group
-                className="mb-3"
-                controlId="exampleForm.ControlTextarea1"
-              >
-                <Form.Label>Price</Form.Label>
-                <Form.Control
-                  type="number"
-                  value={price}
-                  placeholder="price"
-                  required
-                  onChange={(e) => setPrice(e.target.value)}
-                  step="0.01"
-                />
-              </Form.Group>
-              <Form.Group
-                className="mb-3"
-                controlId="exampleForm.ControlTextarea2"
-              >
-                <Form.Label>Quantity</Form.Label>
-                <Form.Control
-                  type="number"
-                  value={quantity}
-                  min="0"
-                  placeholder="quantity"
-                  onChange={(e) => setQuantity(e.target.value)}
-                  required
-                />
-              </Form.Group>
-              <Form.Group
-                className="mb-3"
-                controlId="exampleForm.ControlTextarea1"
-              >
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  value={description}
-                  placeholder="description"
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={3}
-                  required
-                />
-              </Form.Group>
-            </Form>
+            <Container>
+              <Form onSubmit={submitHandler}>
+                <Form.Group
+                  className="mb-3"
+                  controlId="exampleForm.ControlInput1"
+                >
+                  <Form.Label>Product Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={name}
+                    autoFocus
+                    placeholder="Cookie Name"
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group
+                  className="mb-3"
+                  controlId="exampleForm.ControlTextarea1"
+                >
+                  <Form.Label>Price</Form.Label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <Form.Control
+                      type="number"
+                      value={price}
+                      min="0.00"
+                      step="0.01"
+                      placeholder="Cost Per Unit"
+                      required
+                      onChange={(e) => setPrice(e.target.value)}
+                    />
+                  </div>
+                </Form.Group>
+                <Form.Group
+                  className="mb-3"
+                  controlId="exampleForm.ControlTextarea2"
+                >
+                  <Form.Label>Available Quantity</Form.Label>
+                  <Form.Control
+                    type="number"
+                    value={quantity}
+                    min="0"
+                    placeholder="Available Quantity"
+                    onChange={(e) => setQuantity(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                  <Form.Group
+                    className="mb-3"
+                    controlId="exampleForm.ControlTextarea1"
+                  >
+                    <Form.Label>Description</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      value={description}
+                      placeholder="Description"
+                      onChange={(e) => setDescription(e.target.value)}
+                      rows={3}
+                      required
+                    />
+                  </Form.Group>
+                <Row>
+                  <Button type="submit" variant="primary">
+                    Save Changes
+                  </Button>
+                </Row>
+              </Form>
+            </Container>
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              variant="danger"
-              onClick={() => deleteProductHandler(product._id)}
-            >
-              Delete
-            </Button>
-            <Button variant="secondary" onClick={handleClose}>
-              Close
-            </Button>
-            <Button variant="primary" type="submit" onClick={submitHandler}>
-              Save Changes
-            </Button>
+            <div class="input-group">
+              <Button
+                variant="danger"
+                onClick={() => deleteProductHandler(product._id)}
+              >
+                Delete
+              </Button>
+            </div>
           </Modal.Footer>
         </Modal>
       </ListGroup.Item>
