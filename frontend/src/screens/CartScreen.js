@@ -48,7 +48,13 @@ export default function CartScreen() {
         <Col md={8}>
           {cartItems.length === 0 ? (
             <span>
-              Cart is empy. <Link to="/">Go Shopping</Link>{" "}
+              Cart is empty.
+              <a href="/">
+                <br></br>
+                <Button>
+                  Go Shopping
+                </Button>
+              </a>
             </span>
           ) : (
             <ListGroup>
@@ -127,6 +133,6 @@ export default function CartScreen() {
           </Card>
         </Col>
       </Row>
-    </div>
+    </div >
   );
 }
