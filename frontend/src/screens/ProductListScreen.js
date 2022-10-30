@@ -52,7 +52,6 @@ export default function ProductListScreen() {
       const result = await axios.get('/api/products');
       ctxDispatch({ type: 'FILL_PRODUCTS', payload: result.data });
       dispatch({ type: 'FETCH_SUCCESS' });
-      console.log(result.data);
       const data_filter = result.data.filter((element) =>
         element.name.toLowerCase().includes(value.toLowerCase())
       );
@@ -71,7 +70,9 @@ export default function ProductListScreen() {
         ctxDispatch({ type: 'FILL_PRODUCTS', payload: result.data });
         dispatch({ type: 'FETCH_SUCCESS' });
       } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: err.message });
+        dispatch({ 
+          type: 'FETCH_FAIL', 
+          payload: err.message });
       }
     };
     fetchData();
@@ -111,7 +112,11 @@ export default function ProductListScreen() {
         <title>Product List</title>
       </Helmet>
       <h1>Product List</h1>
-      <input type="text" placeholder="Search.." onInput={filterHandler} />
+      <input
+        type="text"
+        id="psearchInput"
+        placeholder="Search.."
+        onInput={filterHandler} />
       <div className="mb-3 text-end">
         <Button variant="primary" onClick={handleShow}>
           Create
