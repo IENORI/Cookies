@@ -11,6 +11,8 @@ import passwordgenerator from 'generate-password';
 import { v1 as uuid } from 'uuid';
 import ratelimit from 'express-rate-limit';
 import * as EmailValidator from 'email-validator';
+import Token from '../models/tokenModel.js';
+import crypto from 'crypto';
 import { lettersOnly } from "../utils.js";
 import { passwordCheck } from "../utils.js";
 
@@ -107,12 +109,9 @@ userRouter.post(
         } catch (error) {
           //Handle error in event of malformed email, email service down etc.
           console.log('Error sending OTP: ' + error);
-          res
-            .status(500)
-            .send({
-              message:
-                'Unable to send verification code, please try again later',
-            }); //500 is internal server error
+          res.status(500).send({
+            message: 'Unable to send verification code, please try again later',
+          }); //500 is internal server error
           return;
         }
         //compare password
@@ -235,12 +234,9 @@ userRouter.post(
         } catch (error) {
           //Handle error in event of malformed email, email service down etc.
           console.log('Error sending OTP: ' + error);
-          res
-            .status(500)
-            .send({
-              message:
-                'Unable to send verification code, please try again later',
-            }); //500 is internal server error
+          res.status(500).send({
+            message: 'Unable to send verification code, please try again later',
+          }); //500 is internal server error
           return;
         }
         //compare password
@@ -299,7 +295,7 @@ userRouter.get('/finduser/:id', isAuth, async (req, res) => {
       isAdmin: user.isAdmin,
     });
   } else {
-    res.status(404).send({ message: 'User not found' })
+    res.status(404).send({ message: 'User not found' });
   }
 });
 
@@ -336,12 +332,9 @@ userRouter.post(
       } catch (error) {
         //Handle error in event of malformed email, email service down etc.
         console.log('Error sending OTP: ' + error);
-        res
-          .status(500)
-          .send({
-            message:
-              'Unable to resend verification code, please try again later',
-          }); //500 is internal server error
+        res.status(500).send({
+          message: 'Unable to resend verification code, please try again later',
+        }); //500 is internal server error
         return;
       }
       res.send('Code resend');
@@ -386,6 +379,7 @@ userRouter.post(
   })
 );
 
+//new password reset
 userRouter.post(
   '/resetpassword',
   expressAsyncHandler(async (req, res) => {
@@ -396,38 +390,65 @@ userRouter.post(
     }
     const user = await User.findOne({ email: req.body.email });
     if (user) {
-      // generate random password
-      const randomPassword = passwordgenerator.generate({
-        length: 10,
-        numbers: true,
-        symbols: true,
-        exclude: ['', '.', ','], // list of characters to exclude
-        excludeSimilarCharacters: true,
-      });
+      const token = await Token.findOne({ userId: user._id });
+      if (token) {
+        await token.deleteOne();
+      }
+      const resetToken = crypto.randomBytes(32).toString("hex"); // generate random reset token using crypto api
+      const hashedToken = await bcrypt.hash(resetToken, 10); // hash the generated token for saving to db with salt of 10
+      await new Token({
+        userId: user._id,
+        token: hashedToken,
+        createdAt: Date.now(),
+      }).save();
+
       // save new password generated to database
-      user.password = bcrypt.hashSync(randomPassword);
-      await user.save();
+      const clientURL = 'http://localhost:3000'
+      const link = `${clientURL}/passwordReset?token=${resetToken}&id=${user._id}`;
       mailOptions['to'] = user.email;
       mailOptions['subject'] = 'Password reset';
       mailOptions[
         'html'
-      ] = `<h1>Your new login password is:${randomPassword}</h1>`;
+      ] = `<h1>Please, click the link to reset the password:${link}</h1>`;
       // send email to user
       try {
         const response = await transporter.sendMail(mailOptions);
       } catch (error) {
         //Handle error in event of malformed email, email service down etc.
-        console.log('Error sending new password: ' + error);
-        res
-          .status(500)
-          .send({
-            message: 'Unable to send new password, please try again later',
-          }); //500 is internal server error
+        console.log('Error sending reset password link: ' + error);
+        res.status(500).send({
+          message: 'Unable to send reset password link, please try again later',
+        }); //500 is internal server error
         return;
       }
-      res.send(`New password have been sent to ${user.email}`);
+      res.send(`Password reset request have been sent to ${user.email}`);
     } else {
       res.status(404).send({ message: 'Email does not exist' });
+    }
+  })
+);
+
+//new password reset
+userRouter.post(
+  '/verifyreset',
+  expressAsyncHandler(async (req, res) => {
+    const passwordResetToken = await Token.findOne({ userId: req.body.userId });
+    if(!passwordResetToken){
+      res.status(404).send({ message: "Invalid or expired password reset token" });
+    }
+    const isValid = await bcrypt.compare(req.body.token, passwordResetToken.token);
+    if(!isValid){
+      res.status(404).send({ message: "Invalid or expired password reset token" });
+    }
+    const user = await User.findById(req.body.userId);
+    if(user){
+      user.password = bcrypt.hashSync(req.body.password, 8); //8 is the salt
+      await user.save();
+      await passwordResetToken.deleteOne();
+      res.send('Password reset successfully');
+    }else{
+      await passwordResetToken.deleteOne();
+      res.status(404).send({ message: "User not found" });
     }
   })
 );
@@ -442,11 +463,9 @@ userRouter.post(
         // if user's login id is different from saved login id in database
         res.send('No new login attempt');
       } else {
-        res
-          .status(404)
-          .send({
-            message: 'Your account has been logged in on another device',
-          });
+        res.status(404).send({
+          message: 'Your account has been logged in on another device',
+        });
       }
     } else {
       res.status(404).send({ message: 'Your account has been removed' });

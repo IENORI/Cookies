@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 //schema, options
 const productSchema = new mongoose.Schema(
@@ -15,6 +15,6 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-const Product = mongoose.model("Product", productSchema); //name of collection and model
+const Product = mongoose.model('Product', productSchema); //name of collection and model
 
 export default Product;
