@@ -44,3 +44,7 @@ export const numbersOnly = (string) => {
 export const alphanumeric = (string) => {
   return /^[a-zA-Z0-9 ]+$/.test(string);
 }
+
+export const passwordCheck = (string) => {
+  return /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9 #$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~ ]+){8,128}$/.test(string);
+}

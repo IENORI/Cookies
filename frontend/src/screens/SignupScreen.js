@@ -39,6 +39,7 @@ export default function SignupScreen() {
           name,
           email,
           password,
+          confirmPassword
         });
         //after successful login
         ctxDispatch({ type: "USER_SIGNIN", payload: data }); //payload that is passed along with action

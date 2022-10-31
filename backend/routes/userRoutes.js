@@ -11,6 +11,8 @@ import passwordgenerator from 'generate-password';
 import { v1 as uuid } from 'uuid';
 import ratelimit from 'express-rate-limit';
 import * as EmailValidator from 'email-validator';
+import { lettersOnly } from "../utils.js";
+import { passwordCheck } from "../utils.js";
 
 dotenv.config(); //to fetch variables
 
@@ -132,12 +134,33 @@ userRouter.post(
       name: req.body.name,
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password),
+      confirmPassword: req.body.confirmPassword
     });
+
+    // validate name format
+    if (!lettersOnly(req.body.name)) {
+      res.status(400).send({ message: 'Invalid name format!' });
+      return;
+    }
+
     // validate email format
     if (!EmailValidator.validate(newUser['email'])) {
       res.status(400).send({ message: 'Invalid email format!' });
       return;
     }
+
+    // validate password syntax
+    if (!passwordCheck(req.body.password)) {
+      res.status(400).send({ message: 'Invalid password1 format!' });
+      return;
+    }
+
+    // validate both password match
+    if (!(req.body.password === req.body.confirmPassword)) {
+      res.status(400).send({ message: 'Invalid password2 format!' });
+      return;
+    }
+
     const loginId = uuid(); // generate unique login id
     // saving generated login id to database
     newUser.login_id = loginId;
@@ -271,11 +294,11 @@ userRouter.put(
 userRouter.get('/finduser/:id', isAuth, async (req, res) => {
   const id = req.params.id;
   const user = await User.findById(id);
-  if(user){
+  if (user) {
     res.send({
       isAdmin: user.isAdmin,
     });
-  }else{
+  } else {
     res.status(404).send({ message: 'User not found' })
   }
 });
