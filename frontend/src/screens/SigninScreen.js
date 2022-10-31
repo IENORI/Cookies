@@ -48,7 +48,7 @@ export default function SigninScreen() {
       if(userInfo.isAdmin){
         navigate("/admin/productlist");
       }else{
-        navigate("/");
+        navigate(redirect);
       }
     }
   }, [navigate, redirect, userInfo]);
