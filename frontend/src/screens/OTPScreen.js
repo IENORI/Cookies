@@ -48,11 +48,14 @@ export default function OTPScreen() {
       });
       //after successful verification
       ctxDispatch({ type: 'USER_SIGNIN', payload: data }); //payload that is passed along with action
+      const isUserAdmin = data['isAdmin'];
+      delete data['isAdmin'];
       localStorage.setItem('userInfo', JSON.stringify(data));
-      if (data.isAdmin === true){
-        navigate('/admin/productlist'); //redirect home screen
+      if (isUserAdmin === true){
+        window.location.href = '/admin/productlist'
+        //navigate('/admin/productlist'); //redirect home screen
       }else{
-        navigate('/'); //redirect home screen
+        window.location.href = '/'
       }
     } catch (err) {
       toast.error(getError(err));

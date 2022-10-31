@@ -41,10 +41,10 @@ const loginlimiter = ratelimit({
   statusCode: 401,
   message: {
     limiter: true,
-    type: "error",
-    message: "Too many requests, please try again later."
-  }
-})
+    type: 'error',
+    message: 'Too many requests, please try again later.',
+  },
+});
 
 userRouter.get('/', isAuth, async (req, res) => {
   const users = await User.find({ isAdmin: false });
@@ -52,7 +52,8 @@ userRouter.get('/', isAuth, async (req, res) => {
 });
 
 userRouter.post(
-  '/signin', loginlimiter,
+  '/signin',
+  loginlimiter,
   expressAsyncHandler(async (req, res) => {
     //Destructuring response token from request body
     const token = req.body.token;
@@ -104,7 +105,12 @@ userRouter.post(
         } catch (error) {
           //Handle error in event of malformed email, email service down etc.
           console.log('Error sending OTP: ' + error);
-          res.status(500).send({ message: 'Unable to send verification code, please try again later' }); //500 is internal server error
+          res
+            .status(500)
+            .send({
+              message:
+                'Unable to send verification code, please try again later',
+            }); //500 is internal server error
           return;
         }
         //compare password
@@ -150,10 +156,11 @@ userRouter.post(
 
 //sign api for testing
 userRouter.post(
-  '/signintest', loginlimiter,
+  '/signintest',
+  loginlimiter,
   expressAsyncHandler(async (req, res) => {
-    if(req.ip != "::ffff:127.0.0.1"){
-      res.status(401).send({ message: "Access denied" });
+    if (req.ip != '::ffff:127.0.0.1') {
+      res.status(401).send({ message: 'Access denied' });
     }
     //Destructuring response token from request body
     const token = req.body.token;
@@ -205,7 +212,12 @@ userRouter.post(
         } catch (error) {
           //Handle error in event of malformed email, email service down etc.
           console.log('Error sending OTP: ' + error);
-          res.status(500).send({ message: 'Unable to send verification code, please try again later' }); //500 is internal server error
+          res
+            .status(500)
+            .send({
+              message:
+                'Unable to send verification code, please try again later',
+            }); //500 is internal server error
           return;
         }
         //compare password
@@ -219,7 +231,6 @@ userRouter.post(
     res.status(401).send({ message: 'Invalid email or password' }); //401 is unauthorized
   })
 );
-
 
 userRouter.put(
   '/profile',
@@ -240,9 +251,8 @@ userRouter.put(
         if (req.body.password) {
           user.password = bcrypt.hashSync(req.body.password, 8); //8 is the salt
         }
-      }
-      else {
-        res.status(404).send({ message: 'Update failed'});
+      } else {
+        res.status(404).send({ message: 'Update failed' });
       }
       const updatedUser = await user.save();
       res.send({
@@ -257,6 +267,18 @@ userRouter.put(
     }
   })
 );
+
+userRouter.get('/finduser/:id', isAuth, async (req, res) => {
+  const id = req.params.id;
+  const user = await User.findById(id);
+  if(user){
+    res.send({
+      isAdmin: user.isAdmin,
+    });
+  }else{
+    res.status(404).send({ message: 'User not found' })
+  }
+});
 
 userRouter.delete(
   '/deleteuser/:id',
@@ -291,7 +313,12 @@ userRouter.post(
       } catch (error) {
         //Handle error in event of malformed email, email service down etc.
         console.log('Error sending OTP: ' + error);
-        res.status(500).send({ message: 'Unable to resend verification code, please try again later' }); //500 is internal server error
+        res
+          .status(500)
+          .send({
+            message:
+              'Unable to resend verification code, please try again later',
+          }); //500 is internal server error
         return;
       }
       res.send('Code resend');
@@ -358,15 +385,21 @@ userRouter.post(
       user.password = bcrypt.hashSync(randomPassword);
       await user.save();
       mailOptions['to'] = user.email;
-      mailOptions['subject'] = 'Password reset'
-      mailOptions['html'] = `<h1>Your new login password is:${randomPassword}</h1>`;
+      mailOptions['subject'] = 'Password reset';
+      mailOptions[
+        'html'
+      ] = `<h1>Your new login password is:${randomPassword}</h1>`;
       // send email to user
       try {
         const response = await transporter.sendMail(mailOptions);
       } catch (error) {
         //Handle error in event of malformed email, email service down etc.
         console.log('Error sending new password: ' + error);
-        res.status(500).send({ message: 'Unable to send new password, please try again later' }); //500 is internal server error
+        res
+          .status(500)
+          .send({
+            message: 'Unable to send new password, please try again later',
+          }); //500 is internal server error
         return;
       }
       res.send(`New password have been sent to ${user.email}`);
@@ -382,10 +415,15 @@ userRouter.post(
     const user = await User.findById(req.body.userId);
     if (user) {
       const login_id = req.body.loginId;
-      if (login_id === user.login_id) { // if user's login id is different from saved login id in database
+      if (login_id === user.login_id) {
+        // if user's login id is different from saved login id in database
         res.send('No new login attempt');
       } else {
-        res.status(404).send({ message: 'Your account has been logged in on another device' })
+        res
+          .status(404)
+          .send({
+            message: 'Your account has been logged in on another device',
+          });
       }
     } else {
       res.status(404).send({ message: 'Your account has been removed' });
@@ -409,6 +447,5 @@ userRouter.put(
     }
   })
 );
-
 
 export default userRouter;

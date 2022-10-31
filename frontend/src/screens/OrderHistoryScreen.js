@@ -1,19 +1,19 @@
-import axios from "axios";
-import React, { useContext, useEffect, useReducer } from "react";
-import Button from "react-bootstrap/esm/Button";
-import { Helmet } from "react-helmet-async";
-import { useNavigate } from "react-router-dom";
-import LoadingBox from "../components/LoadingBox";
-import { Store } from "../Store";
-import { getError } from "../utils";
+import axios from 'axios';
+import React, { useContext, useEffect, useReducer } from 'react';
+import Button from 'react-bootstrap/esm/Button';
+import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
+import LoadingBox from '../components/LoadingBox';
+import { Store } from '../Store';
+import { getError } from '../utils';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "FETCH_REQUEST":
+    case 'FETCH_REQUEST':
       return { ...state, loading: true };
-    case "FETCH_SUCCESS":
+    case 'FETCH_SUCCESS':
       return { ...state, orders: action.payload, loading: false };
-    case "FETCH_FAIL":
+    case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
     default:
       return state;
@@ -27,18 +27,19 @@ export default function OrderHistoryScreen() {
 
   const [{ loading, error, orders }, dispatch] = useReducer(reducer, {
     loading: true,
-    error: "",
+    error: '',
   });
   useEffect(() => {
     const fetchData = async () => {
-      dispatch({ type: "FETCH_REQUEST" });
+      dispatch({ type: 'FETCH_REQUEST' });
       try {
         const { data } = await axios.get(`/api/orders/mine`, {
           headers: { authorization: `Bearer ${userInfo.token}` },
         });
-        dispatch({ type: "FETCH_SUCCESS", payload: data });
+        console.log(data);
+        dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {
-        dispatch({ type: "FETCH_FAIL", payload: getError(err) });
+        dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
     fetchData();
@@ -72,11 +73,9 @@ export default function OrderHistoryScreen() {
                 <td>{order._id}</td>
                 <td>{order.createdAt.substring(0, 10)}</td>
                 <td>${order.totalPrice.toFixed(2)}</td>
-                <td>{order.isPaid ? order.paidAt.substring(0, 10) : "No"}</td>
+                <td>{order.isPaid ? order.paidAt.substring(0, 10) : 'No'}</td>
                 <td>
-                  {order.isDelivered
-                    ? order.deliveredAt.subString(0, 10)
-                    : "No"}
+                  {order.isDelivered ? order.updatedAt.toString().substring(0, 10) : 'No'}
                 </td>
                 <td>
                   <Button

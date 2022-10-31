@@ -42,8 +42,9 @@ export default function SignupScreen() {
         });
         //after successful login
         ctxDispatch({ type: "USER_SIGNIN", payload: data }); //payload that is passed along with action
+        delete data['isAdmin'];
         localStorage.setItem("userInfo", JSON.stringify(data));
-        navigate(redirect || "/"); //redirect to shipping (if clicked from cart, else redirect back to home page cuz is just regular sign in)
+        window.location.href = '/' //redirect to shipping (if clicked from cart, else redirect back to home page cuz is just regular sign in)
       } else {
         toast.error("Failed to create account");
       }
