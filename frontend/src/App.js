@@ -34,6 +34,7 @@ import CheckDeviceLogin from './components/CheckDeviceLogin';
 import axios from 'axios';
 import LoadingBox from './components/LoadingBox';
 import MessageBox from './components/MessageBox';
+import PasswordResetScreen from './screens/PasswordResetScreen';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -202,6 +203,7 @@ function App() {
                       path="/forgotpassword"
                       element={<ForgotPasswordScreen />}
                     />
+                    <Route path="/passwordReset" element={<PasswordResetScreen />} />
                     <Route path="/product/:slug" element={<ProductScreen />} />
                     <Route
                       path="/shipping"
