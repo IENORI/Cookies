@@ -45,7 +45,11 @@ export default function SigninScreen() {
   useEffect(() => {
     if (userInfo) {
       //if there is userinfo (i.e. logged in already)
-      navigate(redirect);
+      if(userInfo.isAdmin){
+        navigate("/admin/productlist");
+      }else{
+        navigate("/");
+      }
     }
   }, [navigate, redirect, userInfo]);
   return (
