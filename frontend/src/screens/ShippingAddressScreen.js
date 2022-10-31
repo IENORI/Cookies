@@ -5,6 +5,7 @@ import Button from "react-bootstrap/Button";
 import { useNavigate } from "react-router-dom";
 import { Store } from "../Store";
 import CheckoutSteps from "../components/CheckoutSteps";
+import { toast } from "react-toastify";
 
 export default function ShippingAddressScreen() {
   const navigate = useNavigate();
@@ -16,16 +17,20 @@ export default function ShippingAddressScreen() {
   const [fullName, setFullName] = useState(shippingAddress.fullName || "");
   const [address, setAddress] = useState(shippingAddress.address || "");
   const [city, setCity] = useState(shippingAddress.city || "");
-  const [postalCode, setPostalCode] = useState(
-    shippingAddress.postalCode || ""
-  );
+  const [postalCode, setPostalCode] = useState(shippingAddress.postalCode || "");
+
+  function letters(str){
+    return /^[A-Za-z ]*$/.test(str);
+  }
+  function numbers(str){
+    return /^[0-9]*$/.test(str);
+  }
 
   useEffect(() => {
     if (!userInfo) {
       navigate("/signin");
     }
   }, [userInfo, navigate]);
-
   const submitHandler = (e) => {
     e.preventDefault(); //prevent refreshing
     ctxDispatch({
@@ -38,17 +43,32 @@ export default function ShippingAddressScreen() {
       },
     });
     //save shipping address locally
-    localStorage.setItem(
-      "shippingAddress",
-      JSON.stringify({
-        fullName,
-        address,
-        city,
-        postalCode,
-      })
-    );
-    //go to payment
-    navigate("/payment");
+    if (letters(fullName)){
+      if (letters(city)){
+        if (numbers(postalCode)){
+          localStorage.setItem(
+            "shippingAddress",
+            JSON.stringify({
+              fullName,
+              address,
+              city,
+              postalCode,
+            })
+          );
+          //go to payment
+          navigate("/payment");
+        }
+        else{
+          toast.error("Postal Code should only contain numbers!")
+        }
+      }
+      else {
+        toast.error("City should only contain letters!")
+      }
+    }
+    else {
+      toast.error("Full Name should only contain letters!");
+    }
   };
   return (
     <div>
