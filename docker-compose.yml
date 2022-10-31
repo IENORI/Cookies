@@ -1,4 +1,33 @@
 services:
+  docker:
+    privileged: true
+    container_name: docker-dind
+    image: docker:dind
+    ports:
+      - 2376:2376
+    networks:
+      - network_priv_3x03
+    environment:
+      - DOCKER_TLS_CERTDIR=/certs
+    volumes:
+      - ./docker_home/jenkins/data:/var/jenkins_home
+      - ./docker_home/jenkins/certs:/certs/client
+
+  jenkins:
+    container_name: jenkins-build-server
+    image: ghcr.io/junhui-f/docker-jenkins-blueocean:main
+    ports:
+      - 8080:8080
+    networks:
+      - network_priv_3x03
+    volumes:
+      - ./docker_home/jenkins/certs:/certs/client:ro
+      - ./docker_home/jenkins/data:/var/jenkins_home
+    environment:
+      - DOCKER_HOST=tcp://docker:2376
+      - DOCKER_CERT_PATH=/certs/client
+      - DOCKER_TLS_VERIFY=1
+
   frontend:
     container_name: frontend
     image: frontend
@@ -6,6 +35,7 @@ services:
       - 3000:3000
     networks:
       - network_priv_3x03
+
   backend:
     container_name: backend
     image: backend
