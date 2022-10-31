@@ -32,8 +32,8 @@ const transporter = nodemailer.createTransport({
 // for storing mail options
 var mailOptions = {
   to: '',
-  subject: 'Verification code',
-  html: `Error sending verification code, please try again later.`,
+  subject: '',
+  html: ``,
 };
 
 // prevent password brute force
@@ -102,6 +102,7 @@ userRouter.post(
         user.temp_secret = secret.base32;
         await user.save();
         mailOptions['to'] = user.email;
+        mailOptions['subject'] = 'Verification code';
         mailOptions['html'] = `<h1>Your verification code is: ${temp_otp}</h1>`;
         // send email to user
         try {
@@ -227,6 +228,7 @@ userRouter.post(
         user.temp_secret = secret.base32;
         await user.save();
         mailOptions['to'] = user.email;
+        mailOptions['subject'] = 'Verification code';
         mailOptions['html'] = `<h1>Your verification code is: ${temp_otp}</h1>`;
         // send email to user
         try {
@@ -325,6 +327,7 @@ userRouter.post(
       user.temp_secret = secret.base32;
       await user.save();
       mailOptions['to'] = user.email;
+      mailOptions['subject'] = 'Verification code';
       mailOptions['html'] = `<h1>Your verification code is: ${temp_otp}</h1>`;
       // send email to user
       try {
@@ -409,7 +412,7 @@ userRouter.post(
       mailOptions['subject'] = 'Password reset';
       mailOptions[
         'html'
-      ] = `<h1>Please, click the link to reset the password:${link}</h1>`;
+      ] = `<h1>Please click the link to reset your password:${link}</h1>`;
       // send email to user
       try {
         const response = await transporter.sendMail(mailOptions);
