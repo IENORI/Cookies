@@ -1,9 +1,9 @@
 import express from "express";
 import Product from "../models/productModel.js";
-import expressAsyncHandler from 'express-async-handler';
-import multer from 'multer';
-import multerS3 from 'multer-s3';
-import aws from 'aws-sdk';
+import expressAsyncHandler from "express-async-handler";
+import multer from "multer";
+import multerS3 from "multer-s3";
+import aws from "aws-sdk";
 import { isAuth } from "../utils.js";
 import dotenv from "dotenv";
 
@@ -15,10 +15,15 @@ const spaceEndPoint = new aws.Endpoint(process.env.SPACES_ENDPOINT);
 const s3 = new aws.S3({
   endpoint: spaceEndPoint,
   accessKeyId: process.env.SPACES_ACCESS_KEY_ID,
-  secretAccessKey: process.env.SPACES_SECRET_ACCESS_KEY
+  secretAccessKey: process.env.SPACES_SECRET_ACCESS_KEY,
 });
 
-const S3URL = "https://" + process.env.SPACES_BUCKET + "." + process.env.SPACES_ENDPOINT + "/"
+const S3URL =
+  "https://" +
+  process.env.SPACES_BUCKET +
+  "." +
+  process.env.SPACES_ENDPOINT +
+  "/";
 var dynamicFileName;
 const upload = multer({
   storage: multerS3({
@@ -29,8 +34,8 @@ const upload = multer({
       const fileName = file.originalname + "-" + String(Date.now()) + ".png";
       dynamicFileName = fileName;
       cb(null, fileName);
-    }
-  })
+    },
+  }),
 });
 
 //the / appends onto the app.use route that is called
@@ -58,28 +63,35 @@ productRouter.get("/:id", async (req, res) => {
 });
 
 productRouter.put(
-  '/update/:id',
+  "/update/:id",
   isAuth,
   expressAsyncHandler(async (req, res) => {
+    console.log("Check out the admin below:");
+    console.log(req.user.isAdmin);
     const product = await Product.findById(req.params.id);
-    if (product) {
-      product.name = req.body.name || product.name;
-      product.price = req.body.price || product.price;
-      product.countInStock = req.body.quantity || product.countInStock;
-      product.description = req.body.description || product.description;
-      const updatedProduct = await product.save();
-      const updatedProducts = await Product.find();
-      res.send(updatedProducts);
+    if (req.user.isAdmin) {
+      if (product) {
+        product.name = req.body.name || product.name;
+        product.price = req.body.price || product.price;
+        product.countInStock = req.body.quantity || product.countInStock;
+        product.description = req.body.description || product.description;
+        const updatedProduct = await product.save();
+        const updatedProducts = await Product.find();
+        res.send(updatedProducts);
+      } else {
+        res.status(404).send({ message: "Product not found" });
+      }
     } else {
-      res.status(404).send({ message: 'Product not found' });
+      //if user is not admin
+      res.status(404).send({ message: "UNAUTHORIZED ACCESS" });
     }
   })
 );
 
 productRouter.post(
-  '/add',
+  "/add",
   isAuth,
-  upload.single('imageFile'),
+  upload.single("imageFile"),
   expressAsyncHandler(async (req, res) => {
     const newProduct = new Product({
       name: req.body.name,
@@ -97,10 +109,10 @@ productRouter.post(
 );
 
 productRouter.delete(
-  '/delete/:id',
+  "/delete/:id",
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    const id = req.params.id
+    const id = req.params.id;
     const product = await Product.findByIdAndRemove(id).exec();
     res.send("Product deleted");
     return;
