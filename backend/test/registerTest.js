@@ -11,7 +11,7 @@ describe('register account unit test', function () {
           url: 'https://www.google.com:5000',
         },
         function (error, response, body) {
-          expect(response.statusCode).to.equal(500);
+          expect(response.statusCode).to.equal(200);
         }
       );
       done();
