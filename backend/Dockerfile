@@ -5,8 +5,6 @@ FROM node:18-alpine as BUILDER_LAYER
 ENV NODE_ENV production
 # Expose Port
 EXPOSE 5000
-# Set run user
-USER node
 # Create working directory
 WORKDIR /usr/src/app
 # Move files into docker and chown
