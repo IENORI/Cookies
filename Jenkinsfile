@@ -13,6 +13,7 @@ pipeline {
         }
         stage('Build') { 
             steps {
+                echo "This is from testpipeline branch"
                 dir('backend') {
                     sh 'npm ci --omit=dev'
                 }
