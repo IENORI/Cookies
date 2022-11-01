@@ -80,7 +80,7 @@ userRouter.post(
     // validate email and password fields
     const validFields = signInFunction.validateSignInFields(req.body.email, req.body.password);
     if(validFields != "valid"){
-      res.status(400).send({ message: emailValidateResult });
+      res.status(400).send({ message: validFields });
       return;
     }
 
