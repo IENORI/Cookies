@@ -1,5 +1,6 @@
 import request from 'request';
 import chai from 'chai';
+import signInFunction from '../functions/signInFunction.js';
 const expect = chai.expect;
 
 describe('sign in unit test', function () {
@@ -160,6 +161,14 @@ describe('sign in unit test', function () {
         }
       );
       done();
+    });
+  });
+
+  // testing invalid captcha
+  describe('Captcha test', function () {
+    it('verify captcha fail', async function () {
+      const result = await signInFunction.verifyCaptcha('invalidToken');
+      expect(result).to.equal('Captcha Error');
     });
   });
 });

@@ -15,6 +15,7 @@ import Token from "../models/tokenModel.js";
 import crypto from "crypto";
 import { lettersOnly } from "../utils.js";
 import { passwordCheck } from "../utils.js";
+import signInFunction from '../functions/signInFunction.js';
 
 dotenv.config(); //to fetch variables
 
@@ -59,6 +60,7 @@ userRouter.get("/", isAuth, async (req, res) => {
   }
 });
 
+
 userRouter.post(
   "/signin",
   loginlimiter,
@@ -66,23 +68,8 @@ userRouter.post(
     //Destructuring response token from request body
     const token = req.body.token;
     //sends secret key and response token to google
-    try {
-      let result = await axios({
-        method: "post",
-        url: "https://www.google.com/recaptcha/api/siteverify",
-        params: {
-          secret: process.env.CAPTCHA_SECRET_KEY,
-          response: token,
-        },
-      });
-      let data = result.data || {};
-      if (!data.success) {
-        throw {
-          success: false,
-          error: "response not valid",
-        };
-      }
-    } catch (err) {
+    const captchaResult = await signInFunction.verifyCaptcha(token);
+    if(captchaResult === "Captcha Error"){
       res.status(401).send({ message: "Captcha Error" }); //401 is unauthorized
     }
 
@@ -503,5 +490,6 @@ userRouter.put(
     }
   })
 );
+
 
 export default userRouter;
