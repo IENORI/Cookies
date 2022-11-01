@@ -13,6 +13,7 @@ pipeline {
             parallel {
                 stage("Frontend") {
                     steps {
+                        echo "This is from testpipeline branch"
                         dir('frontend') {
                             sh 'rm package-lock.json'
                             sh 'rm -rf node_modules'
