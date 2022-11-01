@@ -57,10 +57,10 @@ export default function PlaceOrderScreen() {
           orderItems: cart.cartItems,
           shippingAddress: cart.shippingAddress,
           paymentMethod: cart.paymentMethod,
-          itemsPrice: cart.itemsPrice,
-          shippingPrice: cart.shippingPrice,
-          taxPrice: cart.taxPrice,
-          totalPrice: cart.totalPrice,
+          itemsPrice: 0, // Calculated at backend
+          shippingPrice: 0,
+          taxPrice: 0,
+          totalPrice: 0, 
         },
         {
           headers: {
