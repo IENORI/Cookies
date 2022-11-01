@@ -138,22 +138,29 @@ export default function OrderScreen() {
       <Helmet>
         <title>Order {orderId}</title>
       </Helmet>
-      <h1 className="my-3">Order {orderId}</h1>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="/orderhistory">Order History</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Order Detail</li>
+        </ol>
+      </nav>
+      <h1 className="my-3">Order <code>{orderId}</code></h1>
       <Row>
         <Col md={8}>
           <Card className="mb-3">
             <Card.Body>
               <Card.Title>Shipping</Card.Title>
               <Card.Text>
-                <strong>Name:</strong> {order.shippingAddress.fullName} <br />
-                <strong>Address: </strong> {order.shippingAddress.address},
-                {order.shippingAddress.city}, {order.shippingAddress.postalCode}
+                <strong>Name:</strong> <code>{order.shippingAddress.fullName}</code> <br />
+                <strong>Address: </strong> <code> {order.shippingAddress.address}</code>,
+                <code> {order.shippingAddress.city}</code>,<code> {order.shippingAddress.postalCode}</code>
                 ,{order.shippingAddress.country}
               </Card.Text>
               {order.isDelivered ? (
-                <div variant="success">Delivered at {order.deliveredAt}</div>
+                <div class="alert alert-success" role="alert">&#9989; Delivered on <strong>{order.updatedAt.substring(0, 10)}</strong></div>
               ) : (
-                <div>Not Delivered</div>
+                <div class="alert alert-warning" role="alert">&#10060; Not Delivered</div>
               )}
             </Card.Body>
           </Card>
@@ -164,9 +171,9 @@ export default function OrderScreen() {
                 <strong>Method:</strong> {order.paymentMethod}
               </Card.Text>
               {order.isPaid ? (
-                <div>Paid at {order.paidAt}</div>
+                <div class="alert alert-success" role="alert">&#9989; Paid</div>
               ) : (
-                <div>Not Paid</div>
+                <div class="alert alert-warning" role="alert">&#10060; Not Paid</div>
               )}
             </Card.Body>
           </Card>
@@ -175,21 +182,26 @@ export default function OrderScreen() {
             <Card.Body>
               <Card.Title>Items</Card.Title>
               <ListGroup variant="flush">
+                <Row className="align-items-center">
+                  <Col md={8}></Col>
+                  <Col md={2}><b>Quantity</b></Col>
+                  <Col md={2}><b>Unit Cost</b></Col>
+                </Row>
                 {order.orderItems.map((item) => (
                   <ListGroup.Item key={item._id}>
                     <Row className="align-items-center">
-                      <Col md={6}>
+                      <Col md={3}>
                         <img
                           src={item.image}
                           alt={item.name}
                           className="img-fluid rounded img-thumbnail"
-                        ></img>{" "}
-                        <Link to={`/product/${item.slug}`}>{item.name}</Link>
+                        ></img>
                       </Col>
-                      <Col md={3}>
-                        <span>{item.quantity}</span>
+                      <Col md={5}><Link to={`/product/${item.slug}`}>{item.name}</Link></Col>
+                      <Col md={2}>
+                        <span><code>{item.quantity}</code></span>
                       </Col>
-                      <Col md={3}>${item.price}</Col>
+                      <Col md={2}>$ <code>{item.price}</code></Col>
                     </Row>
                   </ListGroup.Item>
                 ))}
@@ -205,19 +217,19 @@ export default function OrderScreen() {
                 <ListGroup.Item>
                   <Row>
                     <Col>Items</Col>
-                    <Col>${order.itemsPrice.toFixed(2)}</Col>
+                    <Col>$ <code>{order.itemsPrice.toFixed(2)}</code></Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
                     <Col>Shipping</Col>
-                    <Col>${order.shippingPrice.toFixed(2)}</Col>
+                    <Col>$ <code>{order.shippingPrice.toFixed(2)}</code></Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
                     <Col>Tax</Col>
-                    <Col>${order.taxPrice.toFixed(2)}</Col>
+                    <Col>$ <code>{order.taxPrice.toFixed(2)}</code></Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
@@ -226,7 +238,7 @@ export default function OrderScreen() {
                       <strong> Order Total</strong>
                     </Col>
                     <Col>
-                      <strong>${order.totalPrice.toFixed(2)}</strong>
+                      <strong>$ <code>{order.totalPrice.toFixed(2)}</code></strong>
                     </Col>
                   </Row>
                 </ListGroup.Item>

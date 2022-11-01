@@ -75,6 +75,12 @@ export default function ProfileScreen() {
       <Helmet>
         <title>Edit Profile</title>
       </Helmet>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Edit Profile</li>
+        </ol>
+      </nav>
       <h1 className="my-3">Edit Profile</h1>
       <Form onSubmit={submitHandler}>
         <Form.Group className="mb-3" controlId="name">

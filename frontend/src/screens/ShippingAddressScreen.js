@@ -83,6 +83,9 @@ export default function ShippingAddressScreen() {
             <Form.Label>Full Name</Form.Label>
             <Form.Control
               value={fullName}
+              type="text"
+              minlength="3"
+              maxlength="128"
               onChange={(e) => setFullName(e.target.value)}
               required
             />
@@ -91,6 +94,9 @@ export default function ShippingAddressScreen() {
             <Form.Label>Address</Form.Label>
             <Form.Control
               value={address}
+              type="text"
+              minlength="3"
+              maxlength="128"
               onChange={(e) => setAddress(e.target.value)}
               required
             />
@@ -99,17 +105,28 @@ export default function ShippingAddressScreen() {
             <Form.Label>City</Form.Label>
             <Form.Control
               value={city}
+              type="text"
+              minlength="3"
+              maxlength="128"
               onChange={(e) => setCity(e.target.value)}
               required
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="postalCode">
             <Form.Label>Postal Code</Form.Label>
-            <Form.Control
-              value={postalCode}
-              onChange={(e) => setPostalCode(e.target.value)}
-              required
-            />
+            <div className="input-group">
+              <span class="input-group-text">Singapore</span>
+              <Form.Control
+                value={postalCode}
+                type="text"
+                minlength="6"
+                maxlength="6"
+                min="0"
+                placeholder="000000"
+                onChange={(e) => setPostalCode(e.target.value)}
+                required
+              />
+            </div>
           </Form.Group>
           <div className="mb-3">
             <Button variant="primary" type="submit">
