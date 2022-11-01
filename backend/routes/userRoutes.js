@@ -94,8 +94,6 @@ userRouter.post(
 
     const user = await User.findOne({ email: req.body.email }); //return document found
     if (user) {
-      //reset ratelimit on success verification
-      this.resetKey(req.ip)
       //if user exist
       if (bcrypt.compareSync(req.body.password, user.password)) {
         // generate otp
