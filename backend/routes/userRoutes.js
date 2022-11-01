@@ -181,12 +181,13 @@ userRouter.post(
   })
 );
 
-//sign api for testing
+//sign api for testing (testing api key not actual)
 userRouter.post(
   '/signintest',
   expressAsyncHandler(async (req, res) => {
     if (req.ip != "::ffff:127.0.0.1") {
       res.status(401).send({ message: "Access denied" });
+      return;
     }
     //Destructuring response token from request body
     const token = req.body.token;
@@ -196,7 +197,7 @@ userRouter.post(
         method: "post",
         url: "https://www.google.com/recaptcha/api/siteverify",
         params: {
-          secret: process.env.CAPTCHA_TESTING_KEY,
+          secret: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe",
           response: token,
         },
       });
