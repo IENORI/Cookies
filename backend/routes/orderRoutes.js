@@ -1,12 +1,41 @@
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
 import Order from "../models/orderModel.js";
+import Product from "../models/productModel.js";
 import { isAuth } from "../utils.js";
 import { lettersOnly } from "../utils.js";
 import { numbersOnly } from "../utils.js";
 import { alphanumeric } from "../utils.js";
 
 const orderRouter = express.Router();
+
+var itemPriceCombined = 0.0;
+var shippingPrice = 0.0;
+var taxPrice = 0.0;
+var totalCost = 0.0;
+
+// Get actual cookie pricing from DB
+async function calculateValue(req, res, next) {
+  try {
+    const idAndQuantityObj = req.body.orderItems.map(a => ({id: a._id, quantity: a.quantity}));
+    var itemPrice = 0;
+    
+    for (const [key, idAndQuantityDict] of Object.entries(idAndQuantityObj)) {
+      const productID = idAndQuantityDict.id;
+      const cookieQuantity = idAndQuantityDict.quantity;
+      var cookie = await Product.findById(productID);
+      itemPrice = (cookie.price * cookieQuantity);
+      itemPriceCombined += itemPrice
+    };
+
+    shippingPrice = itemPriceCombined > 100 ? 2 : 10;
+    taxPrice = (itemPriceCombined * 0.15);
+    totalCost = (itemPriceCombined + shippingPrice + taxPrice);
+    next();
+  } catch (err) {
+    res.status(401).send({ message: "Item / Cart price mismatch" });
+  }
+}
 
 orderRouter.get('/orders', async (req, res) => {
   const orders = await Order.find();
@@ -17,18 +46,19 @@ orderRouter.get('/orders', async (req, res) => {
 orderRouter.post(
   "/",
   isAuth,
+  calculateValue,
   expressAsyncHandler(async (req, res) => {
     if (numbersOnly(req.body.shippingAddress.postalCode) && lettersOnly(req.body.shippingAddress.fullName)
       && alphanumeric(req.body.shippingAddress.address) && lettersOnly(req.body.shippingAddress.city)) {
-      const newOrder = new Order({
+        const newOrder = new Order({
         //to fill up and ref the ObjectId of Mongoose type as made in the model
         orderItems: req.body.orderItems.map((x) => ({ ...x, product: x._id })),
         shippingAddress: req.body.shippingAddress,
         paymentMethod: req.body.paymentMethod,
-        itemsPrice: req.body.itemsPrice,
-        shippingPrice: req.body.shippingPrice,
-        taxPrice: req.body.taxPrice,
-        totalPrice: req.body.totalPrice,
+        itemsPrice: itemPriceCombined,
+        shippingPrice: shippingPrice,
+        taxPrice: taxPrice,
+        totalPrice: totalCost,
         user: req.user._id, //get from isAuth
       });
       const order = await newOrder.save();
