@@ -165,13 +165,13 @@ userRouter.post("/signup", expressAsyncHandler(async (req, res) => {
     // saving generated login id to database
     newUser.login_id = loginId;
 
-    const testlog = new Log({
-      user: loginId,
+    const user = await newUser.save(); //save to database
+
+    const signUpLog = new Log({
+      user: user._id,
       activity: "New User Created.",
     })
-
-    const user = await newUser.save(); //save to database
-    const log = await testlog.save();
+    await signUpLog.save();
     //then send the response back to front end
     res.send({
       _id: user._id,
@@ -360,7 +360,16 @@ userRouter.post("/verify", expressAsyncHandler(async (req, res) => {
         const loginId = uuid(); // generate unique login id
         // saving generated login id to database
         user.login_id = loginId;
+
+        const signInLog = new Log({
+          user: user._id,
+          isAdmin: user.isAdmin,
+          activity: "User successfully logged in",
+        })
+
         await user.save();
+        await signInLog.save();
+
         res.send({
           _id: user._id,
           name: user.name,
