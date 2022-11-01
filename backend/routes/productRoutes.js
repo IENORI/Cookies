@@ -66,8 +66,6 @@ productRouter.put(
   "/update/:id",
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    console.log("Check out the admin below:");
-    console.log(req.user.isAdmin);
     const product = await Product.findById(req.params.id);
     if (req.user.isAdmin) {
       if (product) {
@@ -93,18 +91,23 @@ productRouter.post(
   isAuth,
   upload.single("imageFile"),
   expressAsyncHandler(async (req, res) => {
-    const newProduct = new Product({
-      name: req.body.name,
-      slug: req.body.name,
-      image: S3URL + dynamicFileName,
-      category: req.body.category,
-      description: req.body.description,
-      price: req.body.price,
-      countInStock: req.body.quantity,
-    });
-    const product = await newProduct.save();
-    const products = await Product.find();
-    res.send(products);
+    if (req.user.isAdmin) {
+      const newProduct = new Product({
+        name: req.body.name,
+        slug: req.body.name,
+        image: S3URL + dynamicFileName,
+        category: req.body.category,
+        description: req.body.description,
+        price: req.body.price,
+        countInStock: req.body.quantity,
+      });
+      const product = await newProduct.save();
+      const products = await Product.find();
+      res.send(products);
+    } else {
+      //if user is not admin
+      res.status(404).send({ message: "UNAUTHORIZED ACCESS" });
+    }
   })
 );
 
