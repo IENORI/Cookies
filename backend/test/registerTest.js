@@ -16,6 +16,7 @@ describe('register account unit test', function () {
           },
         },
         function (error, response, body) {
+          console.log("hi");
           console.log("body is: ", response)
           expect(JSON.parse(response.body).message).to.equal(
             'Invalid email format!'
