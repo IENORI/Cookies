@@ -34,7 +34,12 @@ pipeline {
         }
         stage("Test") {
             steps {
-                sh 'npm start'
+                dir('backend') {
+                    sh 'npm start'
+                }
+                dir('frontend') {
+                    sh 'npm start'
+                }
                 dir('backend') {
                     sh 'npm test'
                 }
