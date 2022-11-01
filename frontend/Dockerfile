@@ -5,8 +5,6 @@
 FROM node:18-alpine as BUILDER_LAYER
 # Set env vars to production
 ENV NODE_ENV production
-# Set run user
-USER node
 # Create working directory
 WORKDIR /usr/src/app
 # Move files into docker and chown

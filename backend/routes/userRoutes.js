@@ -298,8 +298,8 @@ userRouter.post(
         const signInLog = new Log({
           user: user._id,
           isAdmin: user.isAdmin,
-          activity: 'User successfully logged in',
-        });
+          activity: "User Successfully Logged In",
+        })
 
         await user.save();
         await signInLog.save();
@@ -389,9 +389,16 @@ userRouter.post(
         .send({ message: 'Invalid or expired password reset token' });
     }
     const user = await User.findById(req.body.userId);
+    const resetPasswordLog = new Log({
+      user: user._id,
+      isAdmin: user.isAdmin,
+      activity: "User Reset Password Successfully.",
+    })
+
     if (user) {
       user.password = bcrypt.hashSync(req.body.password, 8); //8 is the salt
       await user.save();
+      await resetPasswordLog.save();
       await passwordResetToken.deleteOne();
       res.send('Password reset successfully');
     } else {
