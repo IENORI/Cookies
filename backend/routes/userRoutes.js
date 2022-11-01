@@ -39,7 +39,7 @@ var mailOptions = {
 // prevent password brute force
 const loginlimiter = ratelimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 3, // limit each IP to 5 requests per `window` (here, per 10 minutes)
+  max: 5, // limit each IP to 5 requests per `window` (here, per 10 minutes)
   standardHeaders: true, // return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // disable the `X-RateLimit-*` headers
   statusCode: 401,
@@ -90,6 +90,8 @@ userRouter.post(
 
     const user = await User.findOne({ email: req.body.email }); //return document found
     if (user) {
+      //reset ratelimit on success verification
+      this.resetKey(req.ip)
       //if user exist
       if (bcrypt.compareSync(req.body.password, user.password)) {
         // generate otp
@@ -180,7 +182,6 @@ userRouter.post(
 //sign api for testing
 userRouter.post(
   '/signintest',
-  loginlimiter,
   expressAsyncHandler(async (req, res) => {
     if (req.ip != '::ffff:127.0.0.1') {
       res.status(401).send({ message: 'Access denied' });

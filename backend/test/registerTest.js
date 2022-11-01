@@ -1,6 +1,5 @@
 import request from 'request';
 import chai from 'chai';
-import User from '../models/userModel.js';
 const expect = chai.expect;
 
 describe('register account unit test', function () {
@@ -20,14 +19,14 @@ describe('register account unit test', function () {
           expect(JSON.parse(response.body).message).to.equal(
             'Invalid email format!'
           );
-          done();
         }
       );
+      done();
     });
   });
 
   // testing register function with valid email
-  describe('empty input fields test', function () {
+  describe('valid input fields test', function () {
     it("signup should return 'created account!'", function (done) {
       request.post(
         {
@@ -35,7 +34,8 @@ describe('register account unit test', function () {
           form: {
             name: 'testname',
             email: 'testcaseUser@gmail.com',
-            password: 'testpassword',
+            password: 'Testpassword1',
+            confirmPassword: 'Testpassword1',
           },
         },
         function (error, response, body) {

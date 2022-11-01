@@ -17,9 +17,9 @@ describe('sign in unit test', function () {
         },
         function (error, response, body) {
           expect(response.statusCode).to.equal(401);
-          done();
         }
       );
+      done();
     });
   });
 
@@ -55,9 +55,9 @@ describe('sign in unit test', function () {
           expect(JSON.parse(response.body).message).to.equal(
             'Invalid email format!'
           );
-          done();
         }
       );
+      done();
     });
   });
 
@@ -77,31 +77,9 @@ describe('sign in unit test', function () {
           expect(JSON.parse(response.body).message).to.equal(
             'Invalid email or password'
           );
-          done();
         }
       );
-    });
-  });
-
-  // testing unexists email or wrong password
-  describe('User does not exist test', function () {
-    it("sign in api should return 'Invalid email or password'", function (done) {
-      request.post(
-        {
-          url: 'http://localhost:5000/api/users/signintest',
-          form: {
-            token: 'test_token',
-            email: 'testuser@gmail.com',
-            password: 'test_password',
-          },
-        },
-        function (error, response, body) {
-          expect(JSON.parse(response.body).message).to.equal(
-            'Invalid email or password'
-          );
-          done();
-        }
-      );
+      done();
     });
   });
 
@@ -121,6 +99,28 @@ describe('sign in unit test', function () {
           expect(
             JSON.parse(response.body).hasOwnProperty('_id', 'email')
           ).to.equal(true);
+        }
+      );
+      done();
+    });
+  });
+
+  // testing unexists email or wrong password
+  describe('User does not exist test', function () {
+    it("sign in api should return 'Invalid email or password'", function (done) {
+      request.post(
+        {
+          url: 'http://localhost:5000/api/users/signintest',
+          form: {
+            token: 'test_token',
+            email: 'testuser@gmail.com',
+            password: 'test_password',
+          },
+        },
+        function (error, response, body) {
+          expect(JSON.parse(response.body).message).to.equal(
+            'Invalid email or password'
+          );
         }
       );
       done();
@@ -147,7 +147,7 @@ describe('sign in unit test', function () {
 
   // testing OTP with invalid user
   describe('Non-exst user generating OTP', function () {
-    it("sign in api should return 500 error code", function (done) {
+    it('sign in api should return 500 error code', function (done) {
       request.post(
         {
           url: 'http://localhost:5000/api/users/resendcode',
