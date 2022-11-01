@@ -186,8 +186,6 @@ userRouter.put(
       req.body.oldpassword,
       req.body.password
     );
-    console.log('validfiled: ', validUpdatefields);
-    console.log('name: ', req.user.name);
     if (validUpdatefields != 'valid') {
       res.status(400).send({ message: validUpdatefields });
       return;
