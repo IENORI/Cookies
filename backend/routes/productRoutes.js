@@ -115,10 +115,14 @@ productRouter.delete(
   "/delete/:id",
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    const id = req.params.id;
-    const product = await Product.findByIdAndRemove(id).exec();
-    res.send("Product deleted");
-    return;
+    if (req.user.isAdmin) {
+      const id = req.params.id;
+      const product = await Product.findByIdAndRemove(id).exec();
+      res.send("Product deleted");
+      return;
+    } else {
+      res.status(404).send({ message: "UNAUTHORIZED ACCESS" });
+    }
   })
 );
 
