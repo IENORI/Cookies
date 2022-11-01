@@ -15,6 +15,7 @@ import Token from "../models/tokenModel.js";
 import crypto from "crypto";
 import { lettersOnly } from "../utils.js";
 import { passwordCheck } from "../utils.js";
+import Log from "../models/logModel.js";
 
 dotenv.config(); //to fetch variables
 
@@ -59,10 +60,7 @@ userRouter.get("/", isAuth, async (req, res) => {
   }
 });
 
-userRouter.post(
-  "/signin",
-  loginlimiter,
-  expressAsyncHandler(async (req, res) => {
+userRouter.post("/signin", loginlimiter, expressAsyncHandler(async (req, res) => {
     //Destructuring response token from request body
     const token = req.body.token;
     //sends secret key and response token to google
@@ -113,7 +111,6 @@ userRouter.post(
           const response = await transporter.sendMail(mailOptions);
         } catch (error) {
           //Handle error in event of malformed email, email service down etc.
-          console.log("Error sending OTP: " + error);
           res.status(500).send({
             message: "Unable to send verification code, please try again later",
           }); //500 is internal server error
@@ -128,12 +125,11 @@ userRouter.post(
       }
     }
     res.status(401).send({ message: "Invalid email or password" }); //401 is unauthorized
+
   })
 );
 
-userRouter.post(
-  "/signup",
-  expressAsyncHandler(async (req, res) => {
+userRouter.post("/signup", expressAsyncHandler(async (req, res) => {
     const newUser = new User({
       name: req.body.name,
       email: req.body.email,
@@ -168,11 +164,18 @@ userRouter.post(
     const loginId = uuid(); // generate unique login id
     // saving generated login id to database
     newUser.login_id = loginId;
+
+    const testlog = new Log({
+      user: loginId,
+      activity: "New User Created.",
+    })
+
     const user = await newUser.save(); //save to database
+    const log = await testlog.save();
     //then send the response back to front end
     res.send({
       _id: user._id,
-      name: user.name,
+      name: user.name, 
       email: user.email,
       isAdmin: user.isAdmin,
       token: generateToken(user),
@@ -182,10 +185,7 @@ userRouter.post(
 );
 
 //sign api for testing
-userRouter.post(
-  "/signintest",
-  loginlimiter,
-  expressAsyncHandler(async (req, res) => {
+userRouter.post("/signintest", loginlimiter, expressAsyncHandler(async (req, res) => {
     if (req.ip != "::ffff:127.0.0.1") {
       res.status(401).send({ message: "Access denied" });
     }
@@ -257,10 +257,7 @@ userRouter.post(
   })
 );
 
-userRouter.put(
-  "/profile",
-  isAuth,
-  expressAsyncHandler(async (req, res) => {
+userRouter.put("/profile", isAuth, expressAsyncHandler(async (req, res) => {
     // validate email format
     if (!EmailValidator.validate(req.body.email)) {
       res.status(400).send({ message: "Invalid email format!" });
@@ -305,10 +302,7 @@ userRouter.get("/finduser/:id", isAuth, async (req, res) => {
   }
 });
 
-userRouter.delete(
-  "/deleteuser/:id",
-  isAuth,
-  expressAsyncHandler(async (req, res) => {
+userRouter.delete("/deleteuser/:id", isAuth, expressAsyncHandler(async (req, res) => {
     const id = req.params.id;
     const user = await User.findByIdAndRemove(id).exec();
     res.send("user deleted");
@@ -316,9 +310,7 @@ userRouter.delete(
   })
 );
 
-userRouter.post(
-  "/resendcode",
-  expressAsyncHandler(async (req, res) => {
+userRouter.post("/resendcode", expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.body.userId);
     if (user) {
       // generate otp
@@ -351,9 +343,7 @@ userRouter.post(
   })
 );
 
-userRouter.post(
-  "/verify",
-  expressAsyncHandler(async (req, res) => {
+userRouter.post("/verify", expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.body.userId);
     const temp_otp = req.body.token;
     if (user) {
@@ -387,9 +377,7 @@ userRouter.post(
 );
 
 //new password reset
-userRouter.post(
-  "/resetpassword",
-  expressAsyncHandler(async (req, res) => {
+userRouter.post("/resetpassword", expressAsyncHandler(async (req, res) => {
     // validate email format
     if (!EmailValidator.validate(req.body.email)) {
       res.status(400).send({ message: "Invalid email format!" });
@@ -422,7 +410,6 @@ userRouter.post(
         const response = await transporter.sendMail(mailOptions);
       } catch (error) {
         //Handle error in event of malformed email, email service down etc.
-        console.log("Error sending reset password link: " + error);
         res.status(500).send({
           message: "Unable to send reset password link, please try again later",
         }); //500 is internal server error
@@ -436,9 +423,7 @@ userRouter.post(
 );
 
 //new password reset
-userRouter.post(
-  "/verifyreset",
-  expressAsyncHandler(async (req, res) => {
+userRouter.post("/verifyreset", expressAsyncHandler(async (req, res) => {
     const passwordResetToken = await Token.findOne({ userId: req.body.userId });
     if (!passwordResetToken) {
       res
@@ -467,9 +452,7 @@ userRouter.post(
   })
 );
 
-userRouter.post(
-  "/checkloginid",
-  expressAsyncHandler(async (req, res) => {
+userRouter.post("/checkloginid", expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.body.userId);
     if (user) {
       const login_id = req.body.loginId;
@@ -487,10 +470,7 @@ userRouter.post(
   })
 );
 
-userRouter.put(
-  "/update/:id",
-  isAuth,
-  expressAsyncHandler(async (req, res) => {
+userRouter.put("/update/:id", isAuth, expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
     if (user) {
       user.name = req.body.name || user.name;
