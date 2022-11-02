@@ -4,8 +4,9 @@ const logSchema = new mongoose.Schema(
   {
     user: { type: String, required: true },
     isAdmin: { type: Boolean, default: false, required: true },
-    accessedAt: { type: Date },
+    statusCode : { type: String, required: true },
     activity: { type: String, required: true },
+    accessedAt: { type: Date }
   },
   {
     timestamps: true,

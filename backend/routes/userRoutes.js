@@ -64,6 +64,7 @@ userRouter.get('/', isAuth, async (req, res) => {
   }
 });
 
+//sign in
 userRouter.post(
   '/signin',
   loginlimiter,
@@ -124,6 +125,7 @@ userRouter.post(
   })
 );
 
+//sign up
 userRouter.post(
   '/signup',
   expressAsyncHandler(async (req, res) => {
@@ -153,6 +155,7 @@ userRouter.post(
 
     const signUpLog = new Log({
       user: user._id,
+      statusCode: "200",
       activity: 'New User Created.',
     });
     await signUpLog.save();
@@ -168,6 +171,7 @@ userRouter.post(
   })
 );
 
+//profile
 userRouter.put(
   '/profile',
   isAuth,
@@ -229,6 +233,7 @@ userRouter.get('/finduser/:id', isAuth, async (req, res) => {
   }
 });
 
+//delete user
 userRouter.delete(
   '/deleteuser/:id',
   isAuth,
@@ -240,6 +245,7 @@ userRouter.delete(
   })
 );
 
+//resend code
 userRouter.post(
   '/resendcode',
   expressAsyncHandler(async (req, res) => {
@@ -275,6 +281,7 @@ userRouter.post(
   })
 );
 
+//verify
 userRouter.post(
   '/verify',
   expressAsyncHandler(async (req, res) => {
@@ -299,6 +306,7 @@ userRouter.post(
         const signInLog = new Log({
           user: user._id,
           isAdmin: user.isAdmin,
+          statusCode: "200",
           activity: "User Successfully Logged In",
         })
 
@@ -370,7 +378,7 @@ userRouter.post(
   })
 );
 
-//new password reset
+//verify password reset
 userRouter.post(
   '/verifyreset',
   expressAsyncHandler(async (req, res) => {
@@ -393,6 +401,7 @@ userRouter.post(
     const resetPasswordLog = new Log({
       user: user._id,
       isAdmin: user.isAdmin,
+      statusCode: "200",
       activity: "User Reset Password Successfully.",
     })
 
@@ -409,6 +418,7 @@ userRouter.post(
   })
 );
 
+//check login id
 userRouter.post(
   '/checkloginid',
   expressAsyncHandler(async (req, res) => {
@@ -429,6 +439,7 @@ userRouter.post(
   })
 );
 
+//update
 userRouter.put(
   '/update/:id',
   isAuth,
