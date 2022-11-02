@@ -95,6 +95,7 @@ userRouter.post(
       const temp_otp = speakeasy.totp({
         secret: secret.base32,
         encoding: 'base32',
+        algorithm: 'sha256',
       });
       // save temp_otp to user's temp_secret in database
       user.temp_secret = secret.base32;
@@ -286,6 +287,7 @@ userRouter.post(
       var validToken = speakeasy.totp.verify({
         secret: stored_secret,
         encoding: 'base32',
+        algorithm: 'sha256',
         token: temp_otp,
         window: 1, // default is 1 = 30seconds, increase window by 1 = adding 30 seconds grace time from time code was generated
       });
