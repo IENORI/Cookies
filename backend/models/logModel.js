@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const logSchema = new mongoose.Schema(
   {
-    user: { type: String, required: true },
+    user: { type: String, required: false },
     isAdmin: { type: Boolean, default: false, required: true },
     statusCode : { type: String, required: true },
     activity: { type: String, required: true },

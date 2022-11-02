@@ -33,12 +33,12 @@ async function verifyCaptcha(token) {
 function validateSignInFields(email, password) {
     // validate email format
     if (!EmailValidator.validate(email)) {
-      return 'Invalid email format!';
+      return 'Invalid Email Format!';
     }
   
     // validate password syntax
     if (!passwordCheck(password)) {
-      return 'Invalid password1 format!';
+      return 'Invalid Password Format!';
     }
 
     return 'valid';
