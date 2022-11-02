@@ -5,7 +5,7 @@ pipeline {
     stages {
         stage("Fetch") {
             steps {
-                git branch: "dev",
+                git branch: "testreport",
                     url: "https://github.com/IENORI/Cookies.git"
             }
         }
