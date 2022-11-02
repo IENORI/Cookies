@@ -141,7 +141,7 @@ userRouter.post(
     const newUser = new User({
       name: req.body.name,
       email: req.body.email,
-      password: bcrypt.hashSync(req.body.password),
+      password: bcrypt.hashSync(req.body.password, 8),
       confirmPassword: req.body.confirmPassword,
     });
 
