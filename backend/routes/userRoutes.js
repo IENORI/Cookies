@@ -44,7 +44,7 @@ var mailOptions = {
 // prevent password brute force
 const loginlimiter = ratelimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 5, // limit each IP to 5 requests per `window` (here, per 10 minutes)
+  max: 3, // limit each IP to 5 requests per `window` (here, per 10 minutes)
   standardHeaders: true, // return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // disable the `X-RateLimit-*` headers
   statusCode: 401,
@@ -143,7 +143,6 @@ userRouter.post(
       name: req.body.name,
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 8),
-      confirmPassword: req.body.confirmPassword,
     });
 
     const loginId = uuid(); // generate unique login id
