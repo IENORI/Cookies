@@ -7,6 +7,8 @@ import aws from "aws-sdk";
 import { isAuth } from "../utils.js";
 import dotenv from "dotenv";
 import Log from '../models/logModel.js';
+import { alphanumeric } from "../utils.js";
+import { numbersOnly } from "../utils.js";
 
 
 dotenv.config(); //to fetch variables
@@ -64,6 +66,7 @@ productRouter.get("/:id", async (req, res) => {
   }
 });
 
+//update
 productRouter.put(
   "/update/:id",
   isAuth,
@@ -73,13 +76,13 @@ productRouter.put(
       user: req.user._id,
       isAdmin: req.user.isAdmin,
       statusCode: "200",
-      activity: "Admin Successfully Updated Product: "+ product.name,
+      activity: "Admin Successfully Updated Product: " + product.name,
     })
     const updateProductFLog = new Log({
       user: req.user._id,
       isAdmin: req.user.isAdmin,
       statusCode: "404",
-      activity: product.name + " not found.",
+      activity: "Update failed for " + product.name,
     })
     const unauthorizedLog = new Log({
       user: req.user._id,
@@ -89,7 +92,8 @@ productRouter.put(
     })
 
     if (req.user.isAdmin) {
-      if (product) {
+      if (product && alphanumeric(req.body.name) && numbersOnly(req.body.price)
+        && numbersOnly(req.body.quantity) && alphanumeric(req.body.description)) {
         product.name = req.body.name || product.name;
         product.price = req.body.price || product.price;
         product.countInStock = req.body.quantity || product.countInStock;
@@ -99,7 +103,7 @@ productRouter.put(
         res.send(updatedProducts);
         await updateProductLog.save();
       } else {
-        res.status(404).send({ message: "Product not found" });
+        res.status(404).send({ message: "Update Failed" });
         await updateProductFLog.save();
 
       }
@@ -111,31 +115,41 @@ productRouter.put(
   })
 );
 
+//add
 productRouter.post(
   "/add",
   isAuth,
   upload.single("imageFile"),
   expressAsyncHandler(async (req, res) => {
     if (req.user.isAdmin) {
-      const newProduct = new Product({
-        name: req.body.name,
-        slug: req.body.name,
-        image: S3URL + dynamicFileName,
-        category: req.body.category,
-        description: req.body.description,
-        price: req.body.price,
-        countInStock: req.body.quantity,
-      });
-      const product = await newProduct.save();
-      const products = await Product.find();
-      res.send(products);
-    } else {
+      if (alphanumeric(req.body.name) && alphanumeric(req.body.category)
+        && alphanumeric(req.body.description) && numbersOnly(req.body.price)
+        && numbersOnly(req.body.quantity)) {
+        const newProduct = new Product({
+          name: req.body.name,
+          slug: req.body.name,
+          image: S3URL + dynamicFileName,
+          category: req.body.category,
+          description: req.body.description,
+          price: req.body.price,
+          countInStock: req.body.quantity,
+        });
+        const product = await newProduct.save();
+        const products = await Product.find();
+        res.send(products);
+      }
+      else {
+        res.status(404).send({ message: "Creation Failed" });
+      }
+    }
+    else {
       //if user is not admin
       res.status(404).send({ message: "UNAUTHORIZED ACCESS" });
     }
   })
 );
 
+//delete
 productRouter.delete(
   "/delete/:id",
   isAuth,
