@@ -73,15 +73,28 @@ userRouter.post(
     const token = req.body.token;
     //sends secret key and response token to google
     const captchaResult = await signInFunction.verifyCaptcha(token);
+
+    const captchaLog = new Log({
+      statusCode: "422",
+      activity: "Captcha Error",
+    })
+
+    const validFLog = new Log({
+      statusCode: "400",
+      activity: "Invalid Email/Password",
+    }) 
+
     if (captchaResult === 'Captcha Error') {
       res.status(401).send({ message: captchaResult }); //401 is unauthorized
+      await captchaLog.save();
       return;
     }
 
     // validate email and password fields
     const validFields = signInFunction.validateSignInFields(req.body.email, req.body.password);
-    if(validFields != "valid"){
+    if (validFields != "valid") {
       res.status(400).send({ message: validFields });
+      await validFLog.save();
       return;
     }
 
@@ -122,6 +135,7 @@ userRouter.post(
       return; //no need to continue after this
     }
     res.status(401).send({ message: 'Invalid email or password' }); //401 is unauthorized
+    await validFLog.save();
   })
 );
 
