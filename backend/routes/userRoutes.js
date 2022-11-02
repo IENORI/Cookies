@@ -19,6 +19,7 @@ import signUpFunction from '../functions/signUpFunction.js';
 import updateProfileFunction from '../functions/updateProfileFunction.js';
 import forgotPasswordFunction from '../functions/forgotPasswordFunction.js';
 import Log from '../models/logModel.js';
+import * as EmailValidator from 'email-validator';
 
 dotenv.config(); //to fetch variables
 
@@ -488,14 +489,14 @@ userRouter.put(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
-    if (user) {
+    if (user && lettersOnly(req.body.name) && EmailValidator.validate(req.body.email)) {
       user.name = req.body.name || user.name;
       user.email = req.body.email || user.email;
       const updatedUser = await user.save();
       const updatedUsers = await User.find({ isAdmin: false });
       res.send(updatedUsers);
     } else {
-      res.status(404).send({ message: 'User not found' });
+      res.status(404).send({ message: 'Update Failed' });
     }
   })
 );
