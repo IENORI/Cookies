@@ -35,7 +35,7 @@ describe('sign in unit test', function () {
   describe('Invalid email test', function () {
     it('Result should be Invalid', function () {
       const result = signInFunction.validateSignInFields("testUser@", "Testpassword1");
-      expect(result).to.equal('Invalid email format!');
+      expect(result).to.equal('Invalid Email Format!');
     });
   });
 
@@ -43,7 +43,7 @@ describe('sign in unit test', function () {
   describe('Invalid password test', function () {
     it('Result should be Invalid', function () {
       const result = signInFunction.validateSignInFields("testUser@gmail.com", "Testpassword");
-      expect(result).to.equal('Invalid password1 format!');
+      expect(result).to.equal('Invalid Password Format!');
     });
   });
 
