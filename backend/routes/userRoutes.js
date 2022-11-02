@@ -10,7 +10,6 @@ import dotenv from 'dotenv';
 import passwordgenerator from 'generate-password';
 import { v1 as uuid } from 'uuid';
 import ratelimit from 'express-rate-limit';
-import * as EmailValidator from 'email-validator';
 import Token from '../models/tokenModel.js';
 import crypto from 'crypto';
 import { lettersOnly } from '../utils.js';
