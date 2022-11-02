@@ -301,6 +301,21 @@ userRouter.post(
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.body.userId);
     const temp_otp = req.body.token;
+
+    const signInLog = new Log({
+      user: user._id,
+      isAdmin: user.isAdmin,
+      statusCode: "200",
+      activity: "User Successfully Logged In",
+    })
+
+    const signInFLog = new Log({
+      user: user._id,
+      isAdmin: user.isAdmin,
+      statusCode: "404",
+      activity: "User Failed To Key In Correct OTP",
+    })
+
     if (user) {
       const stored_secret = user.temp_secret;
       // Verify a given token
@@ -317,13 +332,6 @@ userRouter.post(
         // saving generated login id to database
         user.login_id = loginId;
 
-        const signInLog = new Log({
-          user: user._id,
-          isAdmin: user.isAdmin,
-          statusCode: "200",
-          activity: "User Successfully Logged In",
-        })
-
         await user.save();
         await signInLog.save();
 
@@ -337,6 +345,7 @@ userRouter.post(
         });
       } else {
         res.status(404).send({ message: 'Wrong or expired code entered' });
+        await signInFLog.save();
       }
     }
   })
