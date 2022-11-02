@@ -6,6 +6,7 @@ import { isAuth } from "../utils.js";
 import { lettersOnly } from "../utils.js";
 import { numbersOnly } from "../utils.js";
 import { alphanumeric } from "../utils.js";
+import Log from '../models/logModel.js';
 
 const orderRouter = express.Router();
 
@@ -48,6 +49,20 @@ orderRouter.post(
   isAuth,
   calculateValue,
   expressAsyncHandler(async (req, res) => {
+
+    const createOrderLog = new Log({
+      user: req.user._id,
+      isAdmin: req.user.isAdmin,
+      statusCode: "201",
+      activity: "New Order Created",
+    })
+    const createOrderFLog = new Log({
+      user: req.user._id,
+      isAdmin: req.user.isAdmin,
+      statusCode: "404",
+      activity: "Failed To Create New Order",
+    })
+
     if (numbersOnly(req.body.shippingAddress.postalCode) && lettersOnly(req.body.shippingAddress.fullName)
       && alphanumeric(req.body.shippingAddress.address) && lettersOnly(req.body.shippingAddress.city)) {
         const newOrder = new Order({
@@ -65,9 +80,11 @@ orderRouter.post(
       //send back to front end on the order that was saved
       //required the next redirection is actually to order._id
       res.status(201).send({ message: "New Order Created", order });
+      await createOrderLog.save();
     }
     else {
       res.status(404).send({ message: "Failed To Create New Order" });
+      await createOrderFLog.save();
     }
   })
 );
@@ -82,6 +99,7 @@ orderRouter.get(
   })
 );
 
+//id
 orderRouter.get(
   "/:id",
   isAuth,
@@ -95,6 +113,7 @@ orderRouter.get(
   })
 );
 
+//pay
 orderRouter.put(
   "/:id/pay",
   isAuth,
@@ -118,6 +137,7 @@ orderRouter.put(
   })
 );
 
+//update
 orderRouter.put(
   '/update/:id',
   isAuth,
@@ -133,6 +153,7 @@ orderRouter.put(
   })
 );
 
+//delete
 orderRouter.delete(
   '/delete/:id',
   isAuth,
