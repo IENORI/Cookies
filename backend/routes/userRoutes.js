@@ -196,6 +196,18 @@ userRouter.put(
     }
 
     const user = await User.findById(req.user._id); //you can do it like this because it was passed over from the isAuth
+    const profileUpdateLog = new Log({
+      user: user._id,
+      isAdmin: user.isAdmin,
+      statusCode: "200",
+      activity: "User Successfully Updated Profile",
+    })
+    const profileUpdateFLog = new Log({
+      user: user._id,
+      isAdmin: user.isAdmin,
+      statusCode: "404",
+      activity: "User Failed To Update Profile",
+    })
     if (user) {
       //if user is found
       user.name = req.body.name || user.name; //if requested to change, set it to the requested one, else take the default from db
@@ -203,9 +215,11 @@ userRouter.put(
       if (bcrypt.compareSync(req.body.oldpassword, user.password)) {
         if (req.body.password) {
           user.password = bcrypt.hashSync(req.body.password, 8); //8 is the salt
+          await profileUpdateLog.save();
         }
       } else {
         res.status(404).send({ message: 'Update failed' });
+        await profileUpdateFLog.save();
       }
       const updatedUser = await user.save();
       res.send({
