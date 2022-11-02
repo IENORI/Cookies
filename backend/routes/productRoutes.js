@@ -6,6 +6,8 @@ import multerS3 from "multer-s3";
 import aws from "aws-sdk";
 import { isAuth } from "../utils.js";
 import dotenv from "dotenv";
+import Log from '../models/logModel.js';
+
 
 dotenv.config(); //to fetch variables
 
@@ -67,6 +69,25 @@ productRouter.put(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id);
+    const updateProductLog = new Log({
+      user: req.user._id,
+      isAdmin: req.user.isAdmin,
+      statusCode: "200",
+      activity: "Admin Successfully Updated Product: "+ product.name,
+    })
+    const updateProductFLog = new Log({
+      user: req.user._id,
+      isAdmin: req.user.isAdmin,
+      statusCode: "404",
+      activity: product.name + " not found.",
+    })
+    const unauthorizedLog = new Log({
+      user: req.user._id,
+      isAdmin: req.user.isAdmin,
+      statusCode: "401",
+      activity: "Unauthorized Access",
+    })
+
     if (req.user.isAdmin) {
       if (product) {
         product.name = req.body.name || product.name;
@@ -76,12 +97,16 @@ productRouter.put(
         const updatedProduct = await product.save();
         const updatedProducts = await Product.find();
         res.send(updatedProducts);
+        await updateProductLog.save();
       } else {
         res.status(404).send({ message: "Product not found" });
+        await updateProductFLog.save();
+
       }
     } else {
       //if user is not admin
-      res.status(404).send({ message: "UNAUTHORIZED ACCESS" });
+      res.status(401).send({ message: "UNAUTHORIZED ACCESS" });
+      await unauthorizedLog.save();
     }
   })
 );

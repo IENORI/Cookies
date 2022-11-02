@@ -81,7 +81,7 @@ userRouter.post(
     const validFLog = new Log({
       statusCode: "400",
       activity: "Invalid Email/Password",
-    }) 
+    })
 
     if (captchaResult === 'Captcha Error') {
       res.status(401).send({ message: captchaResult }); //401 is unauthorized
@@ -267,7 +267,14 @@ userRouter.delete(
   expressAsyncHandler(async (req, res) => {
     const id = req.params.id;
     const user = await User.findByIdAndRemove(id).exec();
-    res.send('user deleted');
+    const deleteUserLog = new Log({
+      user: req.user._id,
+      isAdmin: req.user.isAdmin,
+      statusCode: "200",
+      activity: "Admin deleted Account: " + user._id,
+    })
+    res.send('User Deleted');
+    await deleteUserLog.save();
     return;
   })
 );
