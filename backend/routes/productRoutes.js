@@ -7,6 +7,9 @@ import aws from "aws-sdk";
 import { isAuth } from "../utils.js";
 import dotenv from "dotenv";
 import Log from '../models/logModel.js';
+import { alphanumeric } from "../utils.js";
+import { lettersOnly } from "../utils.js";
+import { numbersOnly } from "../utils.js";
 
 
 dotenv.config(); //to fetch variables
@@ -64,6 +67,7 @@ productRouter.get("/:id", async (req, res) => {
   }
 });
 
+//update
 productRouter.put(
   "/update/:id",
   isAuth,
@@ -79,7 +83,7 @@ productRouter.put(
       user: req.user._id,
       isAdmin: req.user.isAdmin,
       statusCode: "404",
-      activity: product.name + " not found.",
+      activity: "Update failed for " + product.name,
     })
     const unauthorizedLog = new Log({
       user: req.user._id,
@@ -89,7 +93,8 @@ productRouter.put(
     })
 
     if (req.user.isAdmin) {
-      if (product) {
+      if (product && alphanumeric(req.body.name) && numbersOnly(req.body.price)
+      && numbersOnly(req.body.quantity) && alphanumeric(req.body.description)) {
         product.name = req.body.name || product.name;
         product.price = req.body.price || product.price;
         product.countInStock = req.body.quantity || product.countInStock;
@@ -99,7 +104,7 @@ productRouter.put(
         res.send(updatedProducts);
         await updateProductLog.save();
       } else {
-        res.status(404).send({ message: "Product not found" });
+        res.status(404).send({ message: "Update Failed" });
         await updateProductFLog.save();
 
       }
@@ -111,6 +116,7 @@ productRouter.put(
   })
 );
 
+//add
 productRouter.post(
   "/add",
   isAuth,
@@ -136,6 +142,7 @@ productRouter.post(
   })
 );
 
+//delete
 productRouter.delete(
   "/delete/:id",
   isAuth,
