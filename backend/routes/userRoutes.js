@@ -268,7 +268,14 @@ userRouter.delete(
   expressAsyncHandler(async (req, res) => {
     const id = req.params.id;
     const user = await User.findByIdAndRemove(id).exec();
+    const deleteUserLog = new Log({
+      user: req.user._id,
+      isAdmin: req.user.isAdmin,
+      statusCode: "200",
+      activity: "Admin deleted Account: " + user._id,
+    })
     res.send('User Deleted');
+    await deleteUserLog.save();
     return;
   })
 );
