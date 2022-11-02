@@ -15,7 +15,7 @@ export default function CartScreen() {
   const { state, dispatch: cxtDispatch } = useContext(Store);
   const {
     cart: { cartItems },
-  } = state; //take the cart items from the state
+    userInfo } = state; //take the cart items from the state
 
   const updateCartHandler = async (item, quantity) => {
     const { data } = await axios.get(`/api/products/${item._id}`);
@@ -34,7 +34,12 @@ export default function CartScreen() {
   };
 
   const checkoutHandler = () => {
-    navigate("/signin?redirect=/shipping"); //check if user is signed in, if it is, then redirect to shipping
+    if(userInfo){
+      navigate("/shipping");
+    }else{
+      navigate("/signin");
+    }
+    //navigate("/signin?redirect=/shipping"); //check if user is signed in, if it is, then redirect to shipping
   };
 
   return (
