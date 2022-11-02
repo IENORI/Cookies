@@ -29,25 +29,34 @@ export default function SigninScreen() {
     const token = captchaRef.current.getValue();
     captchaRef.current.reset();
     try {
-      const { data } = await axios.post('/api/users/signin', {
-        token,
-        email,
-        password,
-      });
-      //after successful login
-      localStorage.setItem('validUserIdEmail', JSON.stringify(data)); // only storing valid user id/email locally for token verification
-      navigate('/verify'); //redirect back to OTP screen
+      const conditions = [
+        password.length >= 8 && password.length < 128,
+        password.match(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9 #$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~ ]+)$/) != null
+      ]
+      if (!conditions.includes(false)) {
+        const { data } = await axios.post('/api/users/signin', {
+          token,
+          email,
+          password,
+        });
+        //after successful login
+        localStorage.setItem('validUserIdEmail', JSON.stringify(data)); // only storing valid user id/email locally for token verification
+        navigate('/verify'); //redirect back to OTP screen
+      } else {
+        toast.error("Invalid email or password");
+      } 
     } catch (err) {
-      toast.error(getError(err));
+        toast.error(getError(err));
+      
     }
   };
 
   useEffect(() => {
     if (userInfo) {
       //if there is userinfo (i.e. logged in already)
-      if(userInfo.isAdmin){
+      if (userInfo.isAdmin) {
         navigate("/admin/productlist");
-      }else{
+      } else {
         navigate(redirect);
       }
     }
