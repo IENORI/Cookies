@@ -11,5 +11,9 @@ WORKDIR /usr/src/app
 COPY --chown=node:node . /usr/src/app
 # Install dependencies
 RUN npm ci --omit=dev
-# Run
-CMD ["/bin/sh", "-c", "node server.js"]
+
+## [Stage 2] - Shift only necessary stuff from [Stage 1] into lightweight base
+FROM gcr.io/distroless/nodejs18-debian11
+COPY --from=BUILDER_LAYER /usr/src/app /app
+WORKDIR /app
+CMD ["server.js"]
