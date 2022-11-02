@@ -205,26 +205,11 @@ function App() {
                     />
                     <Route path="/passwordReset" element={<PasswordResetScreen />} />
                     <Route path="/product/:slug" element={<ProductScreen />} />
-                    <Route
-                      path="/shipping"
-                      element={<ShippingAddressScreen />}
-                    />
                     <Route path="/signup" element={<SignupScreen />} />
-                    <Route path="/payment" element={<PaymentMethodScreen />} />
-                    <Route path="/placeorder" element={<PlaceOrderScreen />} />
-                    <Route path="/order/:id" element={<OrderScreen />} />
-                    <Route
-                      path="/orderhistory"
-                      element={<OrderHistoryScreen />}
-                    />
-                    <Route path="/profile" element={<ProfileScreen />} />
                   </Routes>
                 ) : userInfo && userInfo.isAdmin ? ( // logged in admin
                   <Routes>
-                    <Route path="/signup" element={<SignupScreen />} />
                     <Route path="/profile" element={<ProfileScreen />} />
-                    <Route path="/signin" element={<SigninScreen />} />
-                    <Route path="/verify" element={<OTPScreen />} />
                     {/* Admin Routes */}
                     <Route
                       path="/admin/productlist"
@@ -263,18 +248,11 @@ function App() {
                   <Routes>
                     <Route path="/" element={<HomeScreen />} />
                     <Route path="/cart" element={<CartScreen />} />
-                    <Route path="/signin" element={<SigninScreen />} />
-                    <Route path="/verify" element={<OTPScreen />} />
-                    <Route
-                      path="/forgotpassword"
-                      element={<ForgotPasswordScreen />}
-                    />
                     <Route path="/product/:slug" element={<ProductScreen />} />
                     <Route
                       path="/shipping"
                       element={<ShippingAddressScreen />}
                     />
-                    <Route path="/signup" element={<SignupScreen />} />
                     <Route path="/payment" element={<PaymentMethodScreen />} />
                     <Route path="/placeorder" element={<PlaceOrderScreen />} />
                     <Route path="/order/:id" element={<OrderScreen />} />
