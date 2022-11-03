@@ -32,10 +32,6 @@ function validateUpdateProfileFields(name, email, oldPassword, newPassword) {
 
   var commonPwds = fs.readFileSync('10k-most-common.txt', 'utf8').toString().split(/\r?\n/);
 
-  if (commonPwds.includes(password)) {
-    return 'Common password entered! For security reasons please use another password.';
-  }
-
   if (commonPwds.includes(newPassword)) {
     return 'Common password entered! For security reasons please use another password.';
   }
