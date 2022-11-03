@@ -42,7 +42,7 @@ app.get(
 app.use("/api/products", productRouter);
 app.use("/api/users", userRouter);
 app.use("/api/orders", orderRouter);
-app.use("/api/test", logRouter); 
+app.use("/api/logs", logRouter); 
 
 //for express async handler (used in userRoutes)
 app.use((err, req, res, next) => {

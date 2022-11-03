@@ -13,7 +13,7 @@ const reducer = (state, action) => {
     case 'FETCH_REQUEST':
       return { ...state, loading: true };
     case 'FETCH_SUCCESS':
-      return { ...state, logs: action.payload, loading: false };
+      return { ...state, logList: action.payload, loading: false };
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
     default:
@@ -22,32 +22,27 @@ const reducer = (state, action) => {
 };
 
 export default function LogScreen() {
-  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { state } = useContext(Store);
   const { userInfo } = state;
-  const [{ loading, error, logs }, dispatch] = useReducer(reducer, {
+  const [{ loading, error, logList }, dispatch] = useReducer(reducer, {
     loading: true,
     error: '',
   });
-  // console.log(logs)
 
   useEffect(() => {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
       try {
-        const { result } = await axios.get('/api/test', {
+        const result = await axios.get('/api/logs', {
           headers: { authorization: `Bearer ${userInfo.token}` },
         });
-        ctxDispatch({ type: 'FILL_LOGS', payload: result.data });
-        // dispatch({ type: 'FILL_LOGS'});
-        // dispatch({ type: 'FETCH_SUCCESS'});
-        dispatch({ type: 'FETCH_SUCCESS', payload: result });
-        console.log(result)
+        dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: err.message });
       }
     };
     fetchData();
-  }, [ctxDispatch]);
+  }, []);
   return (
     <div>
       <Helmet>
@@ -61,7 +56,7 @@ export default function LogScreen() {
           <MessageBox variant="danger">{error}</MessageBox>
         ) : (
           <Row>
-            {logs.map((log) => (
+            {logList.slice(0).reverse().map((log) => (
               <Col key={log.activity} sm={6} md={4} lg={12} className="mb-3">
                 <Log log={log}></Log>
               </Col>
