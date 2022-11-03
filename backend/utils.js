@@ -32,3 +32,19 @@ export const isAuth = (req, res, next) => {
     res.status(401).send({ message: "No Token" });
   }
 };
+
+export const lettersOnly = (string) => {
+  return /^[a-zA-Z ]+$/.test(string);
+}
+
+export const numbersOnly = (string) => {
+  return /^[0-9]+$/.test(string);
+}
+
+export const alphanumeric = (string) => {
+  return /^[a-zA-Z0-9 ]+$/.test(string);
+}
+
+export const passwordCheck = (string) => {
+  return /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9 #$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~ ]+){8,128}$/.test(string);
+}

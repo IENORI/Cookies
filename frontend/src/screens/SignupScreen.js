@@ -2,6 +2,7 @@ import { useLocation, Link, useNavigate } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import PasswordCheckList from "react-password-checklist";
 import { Helmet } from "react-helmet-async";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
@@ -25,20 +26,29 @@ export default function SignupScreen() {
 
   const submitHandler = async (e) => {
     e.preventDefault(); //prevents page from refreshing
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match!");
-      return; //no need to continue the code
-    }
     try {
-      const { data } = await axios.post("/api/users/signup", {
-        name,
-        email,
-        password,
-      });
-      //after successful login
-      ctxDispatch({ type: "USER_SIGNIN", payload: data }); //payload that is passed along with action
-      localStorage.setItem("userInfo", JSON.stringify(data));
-      navigate(redirect || "/"); //redirect to shipping (if clicked from cart, else redirect back to home page cuz is just regular sign in)
+      const conditions = [
+        password === confirmPassword,
+        password.length >= 8 && password.length <128,
+        password.match(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9 #$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~ ]+)$/) != null
+      ]
+      if (!conditions.includes(false)) {
+        const { data } = await axios.post(
+          "/api/users/signup",
+        {
+          name,
+          email,
+          password,
+          confirmPassword
+        });
+        //after successful login
+        ctxDispatch({ type: "USER_SIGNIN", payload: data }); //payload that is passed along with action
+        delete data['isAdmin'];
+        localStorage.setItem("userInfo", JSON.stringify(data));
+        window.location.href = '/' //redirect to shipping (if clicked from cart, else redirect back to home page cuz is just regular sign in)
+      } else {
+        toast.error("Failed to create account");
+      }
     } catch (err) {
       toast.error(getError(err));
     }
@@ -76,15 +86,21 @@ export default function SignupScreen() {
             required
             onChange={(e) => setPassword(e.target.value)}
           />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="confirmPassword">
           <Form.Label>Confirm Password</Form.Label>
           <Form.Control
             type="password"
             required
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
+          <PasswordCheckList
+            rules={["minLength", "match", "number", "letter"]}
+            minLength={8}
+            value={password}
+            valueAgain={confirmPassword}
+            onChange={(isValid) => { }}
+          />
         </Form.Group>
+
         <div className="mb-3">
           <Button type="submit">Sign Up</Button>
         </div>
