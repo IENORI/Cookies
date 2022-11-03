@@ -27,6 +27,7 @@ export default function ProfileScreen() {
 
   const [name, setName] = useState(userInfo.name);
   const [email, setEmail] = useState(userInfo.email);
+  const [verifyPassword, setVerifyPassword] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [oldpassword, setOldPassword]= useState("");
@@ -35,7 +36,43 @@ export default function ProfileScreen() {
     loadingUpdate: false,
   });
 
-  const submitHandler = async (e) => {
+  const accountDetailSubmitHandler = async (e) => {
+    e.preventDefault(); //prevents refreshing of the page
+    try {
+      const conditions = [
+        verifyPassword.length >= 8 && verifyPassword.length <128,
+      ]
+      if (!conditions.includes(false)) {
+        const { data } = await axios.put(
+          `/api/users/update/details/${userInfo._id}`,
+          {
+            name,
+            email,
+            verifyPassword
+          },
+          {
+            headers: { authorization: `Bearer ${userInfo.token}` },
+          }
+        );
+        dispatch({ type: "FETCH_SUCCESS" });
+        toast.success("User information updated successfully");
+        localStorage.removeItem('validUserIdEmail'); //nuke localstorage
+        localStorage.removeItem('userInfo');
+        localStorage.removeItem('shippingAddress');
+        localStorage.removeItem('paymentMethod');
+        setTimeout(function () {
+          window.location.href = '/signin'; //redirect user back to sign in screen
+        }, 3000)
+      } else {
+        toast.error("User information failed to update");
+      }
+    } catch (err) {
+      dispatch({ type: "FETCH_FAIL" });
+      toast.error(getError(err));
+    }
+  };
+
+  const passwordUpdateSubmitHandler = async (e) => {
     e.preventDefault(); //prevents refreshing of the page
     try {
       const conditions = [
@@ -45,21 +82,24 @@ export default function ProfileScreen() {
       ]
       if (!conditions.includes(false)) {
         const { data } = await axios.put(
-          "/api/users/profile",
+          `/api/users/update/password/${userInfo._id}`,
           {
-            name,
-            email,
             oldpassword,
-            password,
+            password
           },
           {
             headers: { authorization: `Bearer ${userInfo.token}` },
           }
         );
         dispatch({ type: "FETCH_SUCCESS" });
-        ctxDispatch({ type: "USER_SIGNIN", payload: data }); //update the application context on the new user info
-        localStorage.setItem("userInfo", JSON.stringify(data));
         toast.success("User information updated successfully");
+        localStorage.removeItem('validUserIdEmail'); //nuke localstorage
+        localStorage.removeItem('userInfo');
+        localStorage.removeItem('shippingAddress');
+        localStorage.removeItem('paymentMethod');
+        setTimeout(function () {
+          window.location.href = '/signin'; //redirect user back to sign in screen
+        }, 3000)
       } else {
         toast.error("User information failed to update");
       }
@@ -67,81 +107,116 @@ export default function ProfileScreen() {
       dispatch({ type: "FETCH_FAIL" });
       toast.error(getError(err));
     }
-
   };
 
   return (
-    <div className="container small-container">
+    <div className="container">
       <Helmet>
         <title>Edit Profile</title>
       </Helmet>
       <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="/">Home</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Edit Profile</li>
+        <ol className="breadcrumb">
+          <li className="breadcrumb-item"><a href="/">Home</a></li>
+          <li className="breadcrumb-item active" aria-current="page">Edit Profile</li>
         </ol>
       </nav>
       <h1 className="my-3">Edit Profile</h1>
-      <Form onSubmit={submitHandler}>
-        <Form.Group className="mb-3" controlId="name">
-          <Form.Label>Name</Form.Label>
-          <Form.Control
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="email">
-          <Form.Label>Email</Form.Label>
-          <Form.Control
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="oldpassword">
-          <Form.Label>Old Password</Form.Label>
-          <Form.Control
-            type="password"
-            value={oldpassword}
-            onChange={(e) => setOldPassword(e.target.value)}
-            required
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="password">
-          <Form.Label>New Password</Form.Label>
-          <Form.Control
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <Form.Label>Confirm New Password</Form.Label>
-          <Form.Control
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-          <PasswordCheckList
-            rules={["minLength", "match", "number", "letter"]}
-            minLength={8}
-            value={password}
-            valueAgain={confirmPassword}
-            onChange={(isValid) => { }}
-          />
-        </Form.Group>
-
-
-
-        <div className="mb-3">
-          <Button type="submit">Update</Button>
+      <div className="alert alert-warning" role="alert">
+        Changing settings here will <strong>log you out!</strong>
+      </div>
+      <div className="col">
+        <div className="row">
+          <div className="container d-flex justify-content-center">
+            <div className="col col-lg-8 col-xl-6 card p-3">
+              <Form onSubmit={accountDetailSubmitHandler}>
+                <strong>Account Details</strong>
+                <Form.Group className="mb-3 mt-3 input-group" controlId="name">
+                  <span className="input-group-text" id="nameTag">Name</span>
+                  <Form.Control
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3 input-group" controlId="email">
+                  <span className="input-group-text" id="emailTag">Email</span>
+                  <Form.Control
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  />
+                </Form.Group>
+                <hr className="mt-4 mb-4"/>
+                <Form.Group className="mb-3 input-group">
+                  <span className="input-group-text" id="verificationTag">Password</span>
+                  <Form.Control
+                  type="password"
+                  minLength={8}
+                  placeholder="Password for verification"
+                  onChange={(e) => setVerifyPassword(e.target.value)}
+                  required
+                  />
+                </Form.Group>
+                <div className="d-grid d-md-flex justify-content-md-end">
+                  <Button type="submit">Update Details</Button>
+                </div>
+              </Form>
+            </div>
+          </div>
         </div>
-      </Form>
+        <br/>
+        <div className="row">
+          <div className="container d-flex justify-content-center">
+            <div className="col col-lg-8 col-xl-6 card p-3">
+              <Form onSubmit={passwordUpdateSubmitHandler}>
+                <strong>Password</strong>
+                <Form.Group className="mb-3 mt-3 input-group" controlId="oldpassword">
+                  <span className="input-group-text" id="oldPasswordTag">Old Password</span>
+                  <Form.Control
+                    type="password"
+                    minLength={8}
+                    value={oldpassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3 input-group" controlId="password">
+                  <span className="input-group-text" id="nameTag">New Password</span>
+                  <Form.Control
+                    type="password"
+                    minLength={8}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3 input-group">
+                  <span className="input-group-text" id="nameTag">Repeat New Password</span>
+                  <Form.Control
+                    type="password"
+                    minLength={8}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <PasswordCheckList
+                    className="m-3"
+                    rules={["minLength", "match", "number", "letter"]}
+                    minLength={8}
+                    value={password}
+                    valueAgain={confirmPassword}
+                    onChange={(isValid) => { }}
+                  />
+                <div className="d-grid d-md-flex justify-content-md-end">
+                  <Button type="submit">Update Password</Button>
+                </div>
+              </Form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

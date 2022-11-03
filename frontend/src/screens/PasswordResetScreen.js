@@ -3,7 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { Helmet } from 'react-helmet-async';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { getError } from '../utils';
@@ -32,6 +32,9 @@ export default function PasswordResetScreen() {
           token: token
         });
         toast.success(data);
+        setTimeout(function () {
+          window.location.href = '/signin'; //redirect user back to sign in screen
+        }, 3000)
       }else{
         toast.error("Password conditions not match, try again");
       }
