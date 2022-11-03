@@ -291,6 +291,7 @@ userRouter.post(
       const temp_otp = speakeasy.totp({
         secret: secret.base32,
         encoding: 'base32',
+        algorithm: 'sha256',
       });
       // save temp_otp to user's temp_secret in database
       user.temp_secret = secret.base32;
