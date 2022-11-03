@@ -105,11 +105,6 @@ function reducer(state, action) {
         ...state,
         orders: action.payload,
       };
-    case 'FILL_LOGS':
-      return {
-        ...state,
-        logs: action.payload,
-      }
     default:
       return state;
   }
