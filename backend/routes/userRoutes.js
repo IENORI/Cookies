@@ -7,7 +7,6 @@ import axios from 'axios';
 import nodemailer from 'nodemailer';
 import speakeasy from 'speakeasy';
 import dotenv from 'dotenv';
-import passwordgenerator from 'generate-password';
 import { v1 as uuid } from 'uuid';
 import ratelimit from 'express-rate-limit';
 import Token from '../models/tokenModel.js';
