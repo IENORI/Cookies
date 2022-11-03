@@ -7,6 +7,7 @@ import { lettersOnly } from "../utils.js";
 import { numbersOnly } from "../utils.js";
 import { alphanumeric } from "../utils.js";
 import Log from '../models/logModel.js';
+import ratelimit from 'express-rate-limit';
 
 const orderRouter = express.Router();
 
@@ -15,12 +16,28 @@ var shippingPrice = 0.0;
 var taxPrice = 0.0;
 var totalCost = 0.0;
 
+
+
+// prevent multiple orders
+const orderlimiter = ratelimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 5, // limit each IP to 5 requests per `window` (here, per 10 minutes)
+  standardHeaders: true, // return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // disable the `X-RateLimit-*` headers
+  statusCode: 401,
+  message: {
+    limiter: true,
+    type: 'error',
+    message: 'Too many requests, please try again later.',
+  },
+});
+
 // Get actual cookie pricing from DB
 async function calculateValue(req, res, next) {
   try {
-    const idAndQuantityObj = req.body.orderItems.map(a => ({id: a._id, quantity: a.quantity}));
+    const idAndQuantityObj = req.body.orderItems.map(a => ({ id: a._id, quantity: a.quantity }));
     var itemPrice = 0;
-    
+
     for (const [key, idAndQuantityDict] of Object.entries(idAndQuantityObj)) {
       const productID = idAndQuantityDict.id;
       const cookieQuantity = idAndQuantityDict.quantity;
@@ -46,6 +63,7 @@ orderRouter.get('/orders', async (req, res) => {
 //isAuth is the an additioanl middle ware in utils.js, check:http://expressjs.com/en/4x/api.html#app.post.method
 orderRouter.post(
   "/",
+  orderlimiter,
   isAuth,
   calculateValue,
   expressAsyncHandler(async (req, res) => {
@@ -65,7 +83,7 @@ orderRouter.post(
 
     if (numbersOnly(req.body.shippingAddress.postalCode) && lettersOnly(req.body.shippingAddress.fullName)
       && alphanumeric(req.body.shippingAddress.address) && lettersOnly(req.body.shippingAddress.city)) {
-        const newOrder = new Order({
+      const newOrder = new Order({
         //to fill up and ref the ObjectId of Mongoose type as made in the model
         orderItems: req.body.orderItems.map((x) => ({ ...x, product: x._id })),
         shippingAddress: req.body.shippingAddress,
