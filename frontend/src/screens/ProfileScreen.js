@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useContext, useReducer, useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import Form from "react-bootstrap/Form";
+import PasswordCheckList from "react-password-checklist";
 import { Helmet } from "react-helmet-async";
 import { toast } from "react-toastify";
 import { Store } from "../Store";
@@ -28,6 +29,7 @@ export default function ProfileScreen() {
   const [email, setEmail] = useState(userInfo.email);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [oldpassword, setOldPassword]= useState("");
 
   const [{ loadingUpdate }, dispatch] = useReducer(reducer, {
     loadingUpdate: false,
@@ -36,25 +38,36 @@ export default function ProfileScreen() {
   const submitHandler = async (e) => {
     e.preventDefault(); //prevents refreshing of the page
     try {
-      const { data } = await axios.put(
-        "/api/users/profile",
-        {
-          name,
-          email,
-          password,
-        },
-        {
-          headers: { authorization: `Bearer ${userInfo.token}` },
-        }
-      );
-      dispatch({ type: "FETCH_SUCCESS" });
-      ctxDispatch({ type: "USER_SIGNIN", payload: data }); //update the application context on the new user info
-      localStorage.setItem("userInfo", JSON.stringify(data));
-      toast.success("User information updated successfully");
+      const conditions = [
+        password === confirmPassword,
+        password.length >= 8 && password.length <128,
+        password.match(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9 #$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~ ]+)$/) != null
+      ]
+      if (!conditions.includes(false)) {
+        const { data } = await axios.put(
+          "/api/users/profile",
+          {
+            name,
+            email,
+            oldpassword,
+            password,
+          },
+          {
+            headers: { authorization: `Bearer ${userInfo.token}` },
+          }
+        );
+        dispatch({ type: "FETCH_SUCCESS" });
+        ctxDispatch({ type: "USER_SIGNIN", payload: data }); //update the application context on the new user info
+        localStorage.setItem("userInfo", JSON.stringify(data));
+        toast.success("User information updated successfully");
+      } else {
+        toast.error("User information failed to update");
+      }
     } catch (err) {
       dispatch({ type: "FETCH_FAIL" });
       toast.error(getError(err));
     }
+
   };
 
   return (
@@ -62,6 +75,12 @@ export default function ProfileScreen() {
       <Helmet>
         <title>Edit Profile</title>
       </Helmet>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Edit Profile</li>
+        </ol>
+      </nav>
       <h1 className="my-3">Edit Profile</h1>
       <Form onSubmit={submitHandler}>
         <Form.Group className="mb-3" controlId="name">
@@ -83,23 +102,42 @@ export default function ProfileScreen() {
           />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="password">
-          <Form.Label>Password</Form.Label>
+        <Form.Group className="mb-3" controlId="oldpassword">
+          <Form.Label>Old Password</Form.Label>
           <Form.Control
             type="password"
-            onChange={(e) => setPassword(e.target.value)}
+            value={oldpassword}
+            onChange={(e) => setOldPassword(e.target.value)}
             required
           />
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="password">
-          <Form.Label>Password</Form.Label>
+          <Form.Label>New Password</Form.Label>
           <Form.Control
             type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <Form.Label>Confirm New Password</Form.Label>
+          <Form.Control
+            type="password"
+            value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
+          <PasswordCheckList
+            rules={["minLength", "match", "number", "letter"]}
+            minLength={8}
+            value={password}
+            valueAgain={confirmPassword}
+            onChange={(isValid) => { }}
+          />
         </Form.Group>
+
+
+
         <div className="mb-3">
           <Button type="submit">Update</Button>
         </div>

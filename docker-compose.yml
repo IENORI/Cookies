@@ -28,6 +28,20 @@ services:
       - DOCKER_CERT_PATH=/certs/client
       - DOCKER_TLS_VERIFY=1
 
+  frontend:
+    container_name: frontend
+    image: frontend
+    ports:
+      - 3000:3000
+    networks:
+      - network_priv_3x03
+
+  backend:
+    container_name: backend
+    image: backend
+    networks:
+      - network_priv_3x03
+
 networks:
   network_priv_3x03:
     name: network_priv_3x03

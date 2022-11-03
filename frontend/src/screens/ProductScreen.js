@@ -11,6 +11,7 @@ import { Helmet } from "react-helmet-async";
 import { getError } from "../utils";
 import LoadingBox from "../components/LoadingBox";
 import { Store } from "../Store";
+import { toast } from 'react-toastify';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -53,7 +54,7 @@ function ProductScreen() {
     const quantity = existItem ? existItem.quantity + 1 : 1; //set to one if doesn't exist in cart
     const { data } = await axios.get(`/api/products/${product._id}`);
     if (data.countInStock < quantity) {
-      window.alert("Sorry. Product is out of stock!");
+      toast.error("Sorry. Product is out of stock!");
       return;
     }
     cxtDispatch({

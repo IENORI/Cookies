@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useContext } from "react";
 import { Store } from "../Store";
+import { toast } from "react-toastify";
 
 function Product({ product }) {
   const { state, dispatch: cxtDispatch } = useContext(Store);
@@ -15,7 +16,7 @@ function Product({ product }) {
     const quantity = existItem ? existItem.quantity + 1 : 1; //set to one if doesn't exist in cart
     const { data } = await axios.get(`/api/products/${item._id}`);
     if (data.countInStock < quantity) {
-      window.alert("Sorry. Product is out of stock!");
+      toast.error("Sorry. Product is out of stock!");
       return;
     }
     cxtDispatch({
