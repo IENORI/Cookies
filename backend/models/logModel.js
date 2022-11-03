@@ -13,5 +13,5 @@ const logSchema = new mongoose.Schema(
   }
 );
 
-const logModel = mongoose.model("Log", logSchema); //name of collection and model
+const logModel = mongoose.model("Test", logSchema); //name of collection and model
 export default logModel;

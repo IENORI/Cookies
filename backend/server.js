@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import productRouter from "./routes/productRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import orderRouter from "./routes/orderRoutes.js";
+import logRouter from "./routes/logRoutes.js";
 import expressAsyncHandler from "express-async-handler";
 import { isAuth } from "./utils.js";
 
@@ -41,6 +42,7 @@ app.get(
 app.use("/api/products", productRouter);
 app.use("/api/users", userRouter);
 app.use("/api/orders", orderRouter);
+app.use("/api/test", logRouter); 
 
 //for express async handler (used in userRoutes)
 app.use((err, req, res, next) => {

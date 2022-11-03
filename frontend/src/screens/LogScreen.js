@@ -5,7 +5,7 @@ import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import User from '../components/User';
+import Log from '../components/Log';
 import { Store } from '../Store';
 
 const reducer = (state, action) => {
@@ -13,46 +13,47 @@ const reducer = (state, action) => {
     case 'FETCH_REQUEST':
       return { ...state, loading: true };
     case 'FETCH_SUCCESS':
-      return { ...state, loading: false };
+      return { ...state, logs: action.payload, loading: false };
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
     default:
       return state;
   }
-}; 
+};
 
-export default function UserListScreen() {
+export default function LogScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { userList, userInfo } = state;
-  const [{ loading, error }, dispatch] = useReducer(reducer, {
+  const { userInfo } = state;
+  const [{ loading, error, logs }, dispatch] = useReducer(reducer, {
     loading: true,
     error: '',
   });
+  // console.log(logs)
 
-  //const [products, setProducts] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
       try {
-        const result = await axios.get('/api/users', {
+        const { result } = await axios.get('/api/test', {
           headers: { authorization: `Bearer ${userInfo.token}` },
         });
-        ctxDispatch({ type: 'FILL_USER', payload: result.data });
-        dispatch({ type: 'FETCH_SUCCESS' });
+        ctxDispatch({ type: 'FILL_LOGS', payload: result.data });
+        // dispatch({ type: 'FILL_LOGS'});
+        // dispatch({ type: 'FETCH_SUCCESS'});
+        dispatch({ type: 'FETCH_SUCCESS', payload: result });
+        console.log(result)
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: err.message });
       }
-      //setProducts(result.data);
     };
     fetchData();
-  }, [ctxDispatch, userInfo]);
-
+  }, [ctxDispatch]);
   return (
     <div>
       <Helmet>
-        <title>Users</title>
+        <title>Logs</title>
       </Helmet>
-      <h1>List of users</h1>
+      <h1>All Logs</h1>
       <div>
         {loading ? (
           <LoadingBox />
@@ -60,9 +61,9 @@ export default function UserListScreen() {
           <MessageBox variant="danger">{error}</MessageBox>
         ) : (
           <Row>
-            {userList.map((user) => (
-              <Col key={user.email} sm={6} md={4} lg={12} className="mb-3">
-                <User user={user}></User>
+            {logs.map((log) => (
+              <Col key={log.activity} sm={6} md={4} lg={12} className="mb-3">
+                <Log log={log}></Log>
               </Col>
             ))}
           </Row>
