@@ -2,7 +2,7 @@
 
 ## Getting up and running
 
-`2` seperate terminal instances will be required to run backend and frontend services simultaneously.
+`2` seperate terminal instances will be required to run backend and frontend services simultaneously
 
 ### Setting up backend
 0. Place `.env` at root of `backend/`
