@@ -3,16 +3,6 @@ import { lettersOnly } from '../utils.js';
 import { passwordCheck } from '../utils.js';
 import * as fs from 'fs'; 
 
-let commonPwds;
-
-fs.readFile('10k-most-common.txt', 'utf8', (err, data) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  commonPwds = data.toString().split(/\r?\n/);
-});
-
 // validate email format
 function validateEmail(email) {
   if (!EmailValidator.validate(email)) {
@@ -39,6 +29,8 @@ function validateUpdateProfileFields(name, email, oldPassword, newPassword) {
   if (!passwordCheck(newPassword)) {
     return 'Invalid newPassword format!';
   }
+
+  var commonPwds = fs.readFileSync('10k-most-common.txt', 'utf8').toString().split(/\r?\n/);
 
   if (commonPwds.includes(newPassword)) {
     return 'Common password entered! For security reasons please use another password.';

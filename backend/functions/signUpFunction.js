@@ -3,16 +3,6 @@ import { lettersOnly } from '../utils.js';
 import { passwordCheck } from '../utils.js';
 import * as fs from 'fs'; 
 
-let commonPwds;
-
-fs.readFile('10k-most-common.txt', 'utf8', (err, data) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  commonPwds = data.toString().split(/\r?\n/);
-});
-
 function validateSignUpFields(name, email, password, confirmPassword) {
   // validate name format
   if (!lettersOnly(name)) {
@@ -32,6 +22,8 @@ function validateSignUpFields(name, email, password, confirmPassword) {
   if (!(password === confirmPassword)) {
     return 'Invalid password2 format!';
   }
+
+  var commonPwds = fs.readFileSync('10k-most-common.txt', 'utf8').toString().split(/\r?\n/);
 
   if (commonPwds.includes(password)) {
     return 'Common password entered! For security reasons please use another password.';
