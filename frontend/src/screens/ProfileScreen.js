@@ -22,7 +22,7 @@ const reducer = (state, action) => {
 };
 
 export default function ProfileScreen() {
-  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { state } = useContext(Store);
   const { userInfo } = state;
 
   const [name, setName] = useState(userInfo.name);
@@ -32,7 +32,7 @@ export default function ProfileScreen() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [oldpassword, setOldPassword]= useState("");
 
-  const [{ loadingUpdate }, dispatch] = useReducer(reducer, {
+  const [dispatch] = useReducer(reducer, {
     loadingUpdate: false,
   });
 
@@ -43,7 +43,7 @@ export default function ProfileScreen() {
         verifyPassword.length >= 8 && verifyPassword.length <128,
       ]
       if (!conditions.includes(false)) {
-        const { data } = await axios.put(
+        await axios.put(
           `/api/users/update/details/${userInfo._id}`,
           {
             name,
@@ -81,7 +81,7 @@ export default function ProfileScreen() {
         password.match(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9 #$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~ ]+)$/) != null
       ]
       if (!conditions.includes(false)) {
-        const { data } = await axios.put(
+        await axios.put(
           `/api/users/update/password/${userInfo._id}`,
           {
             oldpassword,
@@ -157,6 +157,9 @@ export default function ProfileScreen() {
                   onChange={(e) => setVerifyPassword(e.target.value)}
                   required
                   />
+                  <button id="toggle-password" type="button" className="d-none"
+                    aria-label="Show password as plain text. Warning: this will display your password on the screen.">
+                  </button>
                 </Form.Group>
                 <div className="d-grid d-md-flex justify-content-md-end">
                   <Button type="submit">Update Details</Button>
@@ -177,6 +180,7 @@ export default function ProfileScreen() {
                     type="password"
                     minLength={8}
                     value={oldpassword}
+                    placeholder="Old Password"
                     onChange={(e) => setOldPassword(e.target.value)}
                     required
                   />
@@ -187,23 +191,25 @@ export default function ProfileScreen() {
                     type="password"
                     minLength={8}
                     value={password}
+                    placeholder="New password"
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </Form.Group>
                 <Form.Group className="mb-3 input-group">
-                  <span className="input-group-text" id="nameTag">Repeat New Password</span>
+                  <span className="input-group-text" id="nameTag">Repeat Password</span>
                   <Form.Control
                     type="password"
                     minLength={8}
                     value={confirmPassword}
+                    placeholder="Repeat New password"
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                   />
                 </Form.Group>
                 <PasswordCheckList
                     className="m-3"
-                    rules={["minLength", "match", "number", "letter"]}
+                    rules={["minLength", "number", "letter", "match"]}
                     minLength={8}
                     value={password}
                     valueAgain={confirmPassword}

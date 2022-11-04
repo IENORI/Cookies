@@ -3,7 +3,6 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { getError } from '../utils';
@@ -11,6 +10,7 @@ import PasswordCheckList from 'react-password-checklist';
 
 export default function PasswordResetScreen() {
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState("");
   const windowUrl = window.location.search;
   const params = new URLSearchParams(windowUrl);
   const token = params.get("token");
@@ -44,36 +44,64 @@ export default function PasswordResetScreen() {
   };
 
   return (
-    <Container className="small-container">
+    <Container className="container">
       <Helmet>
         <title>Password Reset</title>
       </Helmet>
-      <h1 className="my-3 text-center">Password reset</h1>
-      <Form onSubmit={submitHandler}>
-        <Form.Group className="mb-3" controlId="password">
-          <Form.Label>New Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="New password"
-            required
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <PasswordCheckList
-            rules={['minLength', 'number', 'letter']}
-            minLength={8}
-            value={password}
-            onChange={(isValid) => {}}
-          />
-        </Form.Group>
-        <div className="mb-3">
-          <Button className="w-100" type="submit">
-            Reset
-          </Button>
+      <h1 className="my-3">Password Reset</h1>
+      <div className="alert alert-danger" role="alert">
+        You are about to reset your <strong>password</strong>.
+        <br/>
+        If this action was not requested by you, please <strong>CANCEL</strong> this prompt.
+      </div>
+      <div className="col">
+        <div className="row">
+          <div className="container d-flex justify-content-center">
+            <div className="col col-lg-8 col-xl-6 card p-3">
+              <Form onSubmit={submitHandler}>
+                <strong>Password</strong>
+                <Form.Group className="mb-3 mt-3 input-group" controlId="password">
+                  <span className="input-group-text" id="newPasswordTag">New Password</span>
+                  <Form.Control
+                    type="password"
+                    placeholder="New password"
+                    required
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3 input-group">
+                  <span className="input-group-text" id="repeatPasswordTag">Repeat Password</span>
+                  <Form.Control
+                    type="password"
+                    placeholder="Repeat New password"
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <PasswordCheckList
+                  className="m-3"
+                  rules={['minLength', 'number', 'letter', 'match']}
+                  minLength={8}
+                  value={password}
+                  valueAgain={confirmPassword}
+                  onChange={(isValid) => {}}
+                  />
+                <div className="mb-3">
+                  <Button className="w-100" type="submit">
+                    Reset Password
+                  </Button>
+                </div>
+              </Form>
+              <div className="mb-3 text-center">
+                  <Button className="w-50 btn-light" type="submit">
+                    Cancel
+                  </Button>
+                  {/* <Link to={'/signin'}>Back to Login</Link> */}
+              </div>
+            </div>
+          </div>
         </div>
-      </Form>
-      <div className="mb-3 text-center">
-          <Link to={'/signin'}>Back to Login</Link>
-        </div>
+      </div>
     </Container>
   );
 }
