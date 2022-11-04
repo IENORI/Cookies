@@ -93,10 +93,9 @@ export default function PasswordResetScreen() {
                 </div>
               </Form>
               <div className="mb-3 text-center">
-                  <Button className="w-50 btn-light" type="submit">
+                  <Button className="w-50 btn-light" href="/signin">
                     Cancel
                   </Button>
-                  {/* <Link to={'/signin'}>Back to Login</Link> */}
               </div>
             </div>
           </div>
