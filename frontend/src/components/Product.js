@@ -25,7 +25,7 @@ function Product({ product }) {
     });
   };
   return (
-    <Card key={product.slug}>
+    <Card className="shadow-sm" key={product.slug}>
       <Link to={`/product/${product.slug}`}>
         <img src={product.image} className="card-img-top" alt={product.name} />
       </Link>

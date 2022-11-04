@@ -2,6 +2,7 @@ import { useEffect, useReducer } from 'react';
 import axios from 'axios';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
 import Product from '../components/Product';
 import { Helmet } from 'react-helmet-async';
 import LoadingBox from '../components/LoadingBox';
@@ -50,18 +51,40 @@ function HomeScreen() {
     };
     fetchData();
   }, []);
+
+  const backgroundImage = {
+    "backgroundImage": "url('../mae-mu-ZjVPaveuZNo-unsplash.png')",
+    "height": "400px"
+  };
+
   return (
     <div>
       <Helmet>
         <title>Cookies!</title>
       </Helmet>
-      <h1>Featured Cookies!</h1>
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Search.."
-        onChange={submitHandler}
-      />
+      <header>
+        <div className="container rounded-3 d-flex align-items-center justify-content-center" style={backgroundImage}>
+          <div className="row">
+            <div className="text-center text-white">
+                <h1>The absolute BEST cookies in town!</h1>
+            </div>
+          </div>
+        </div>
+      </header>
+      <hr/>
+      <div className="mb-3 container d-flex justify-content-center">
+        <div className="col col-xl-8">
+          <Form.Group className="mb-3 mt-3 input-group shadow-sm" controlId="email">
+            <span className="input-group-text" id="searchTag">&#128269; &#127850;</span>
+            <Form.Control
+              type="email"
+              placeholder="Find a cookie"
+              required
+              onChange={submitHandler}
+            />
+          </Form.Group>
+        </div>
+      </div>
       <div className="products w-100" id="products">
         {loading ? (
           <LoadingBox />
@@ -71,7 +94,7 @@ function HomeScreen() {
           <Container className="px-0">
             <Row>
               {products.map((product) => (
-                <Col key={product.slug} sm={6} md={4} lg={3} className="mb-3">
+                <Col key={product.slug} md={6} xl={4} className="mb-3">
                   <Product product={product} />
                 </Col>
               ))}
