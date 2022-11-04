@@ -126,7 +126,7 @@ productRouter.post(
       user: req.user._id,
       isAdmin: req.user.isAdmin,
       statusCode: "404",
-      activity: "Admin Failed to Created Product",
+      activity: "Admin Failed to Create Product",
     })
 
     if (req.user.isAdmin) {
@@ -170,13 +170,27 @@ productRouter.delete(
   "/delete/:id",
   isAuth,
   expressAsyncHandler(async (req, res) => {
+    const deleteProductFLog = new Log({
+      user: req.user._id,
+      isAdmin: req.user.isAdmin,
+      statusCode: "404",
+      activity: "Admin Failed to Delete Product",
+    })
     if (req.user.isAdmin) {
       const id = req.params.id;
       const product = await Product.findByIdAndRemove(id).exec();
+      const deleteProductLog = new Log({
+        user: req.user._id,
+        isAdmin: req.user.isAdmin,
+        statusCode: "200",
+        activity: "Admin Successfully Deleted Product: " + product.name,
+      })
       res.send("Product deleted");
+      await deleteProductLog.save();
       return;
     } else {
       res.status(404).send({ message: "UNAUTHORIZED ACCESS" });
+      await deleteProductFLog.save();
     }
   })
 );
