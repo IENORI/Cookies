@@ -1,6 +1,5 @@
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Store } from '../Store';
 import { getError } from '../utils';
@@ -9,7 +8,6 @@ export default function OTPScreen() {
   const [otp, setOtp] = useState(new Array(6).fill(''));
   const { dispatch: ctxDispatch } = useContext(Store); //to use the context that was already defined
   const [counter, setCounter] = useState(10);
-  const navigate = useNavigate();
 
   const handleChange = (element, index) => {
     if (isNaN(element.value)) return false;
@@ -53,7 +51,6 @@ export default function OTPScreen() {
       localStorage.setItem('userInfo', JSON.stringify(data));
       if (isUserAdmin === true){
         window.location.href = '/admin/productlist'
-        //navigate('/admin/productlist'); //redirect home screen
       }else{
         window.location.href = '/'
       }

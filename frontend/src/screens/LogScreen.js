@@ -42,7 +42,7 @@ export default function LogScreen() {
       }
     };
     fetchData();
-  }, []);
+  }, [userInfo.token]);
   return (
     <div>
       <Helmet>
