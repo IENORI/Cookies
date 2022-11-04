@@ -143,6 +143,16 @@ userRouter.post(
 userRouter.post(
   '/signup',
   expressAsyncHandler(async (req, res) => {
+    const token = req.body.token;
+    //sends secret key and response token to google
+    const captchaResult = await signUpFunction.verifyCaptcha(token);
+
+    if (captchaResult === 'Captcha Error') {
+      res.status(401).send({ message: captchaResult }); //401 is unauthorized
+      await captchaLog.save();
+      return;
+    }
+
     // validate input fields
     const validFields = signUpFunction.validateSignUpFields(
       req.body.name,
