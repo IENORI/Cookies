@@ -1,4 +1,3 @@
-import React, { useContext, useState } from 'react';
 import ListGroup from 'react-bootstrap/ListGroup';
 
 function Log(props) {
@@ -6,7 +5,6 @@ function Log(props) {
   const { log } = props;
   const statusCode = log.statusCode;
   const activity = log.activity;
-  const isAdmin = log.isAdmin;
   const user = log.user;
   const time = log.createdAt;
   var timestamp = new Date(time)

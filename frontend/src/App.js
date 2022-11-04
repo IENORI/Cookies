@@ -80,7 +80,7 @@ function App() {
       };
       fetchData();
     }
-  }, []);
+  }, [ctxDispatch, userInfo]);
 
   const signoutHandler = () => {
     ctxDispatch({ type: 'USER_SIGNOUT' });

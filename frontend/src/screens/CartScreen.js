@@ -48,19 +48,19 @@ export default function CartScreen() {
         <title>Shopping Cart</title>
       </Helmet>
       <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="/">Home</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
+        <ol className="breadcrumb">
+          <li className="breadcrumb-item"><a href="/">Home</a></li>
+          <li className="breadcrumb-item active" aria-current="page">Shopping Cart</li>
         </ol>
       </nav>
-      <h1 class="mb-3">Shopping Cart</h1>
+      <h1 className="mb-3">Shopping Cart</h1>
       <Row>
         <Col md={8}>
           {cartItems.length === 0 ? (
             <div className="alert alert-secondary" role="alert">
               <strong>Cart is empty</strong>
               <br/>
-              <Link class="mt-3 btn btn-primary" to="/">Go Shopping</Link> 
+              <Link className="mt-3 btn btn-primary" to="/">Go Shopping</Link> 
             </div>
           ) : (
             <ListGroup>

@@ -5,7 +5,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
-import { Link } from 'react-router-dom';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 import { Store } from '../Store';
@@ -81,7 +80,7 @@ export default function OrderAdminScreen() {
       isDelivered = false;
     }
     try {
-      const { data } = await axios.put(
+      await axios.put(
         `/api/orders/update/${order._id}`,
         {
           isDelivered,
