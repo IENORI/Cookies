@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button';
 import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { getError } from "../utils";
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -20,7 +21,7 @@ export default function ForgotPasswordScreen() {
         window.location.href = '/signin'; //redirect user back to sign in screen
       }, 3000)
     } catch (err) {
-      toast.success();
+      toast.error(getError(err));
     }
   };
 

@@ -314,7 +314,6 @@ userRouter.post(
   '/resetpassword',
   expressAsyncHandler(async (req, res) => {
     // validate email format
-    // validate email format
     const emailValidateResult = forgotPasswordFunction.validateEmail(req.body.email);
     if (emailValidateResult === 'Invalid email format!') {
       res.status(400).send({ message: emailValidateResult });
