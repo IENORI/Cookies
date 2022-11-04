@@ -353,7 +353,8 @@ userRouter.post(
       }
       res.send(`Password reset request have been sent to ${user.email}`);
     } else {
-      res.status(404).send({ message: 'Email does not exist' });
+      //Email doesn't exist, but showing same result to prevent others from checking which email has an account
+      res.send(`Password reset request have been sent to ${req.body.email}`);
     }
   })
 );
