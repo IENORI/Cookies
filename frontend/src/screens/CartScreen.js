@@ -64,11 +64,6 @@ export default function CartScreen() {
             </div>
           ) : (
             <ListGroup>
-              <Row className="align-items-center">
-                <Col md={6}></Col>
-                <Col md={2}><b>Quantity</b></Col>
-                <Col md={2}><b>Unit Cost</b></Col>
-              </Row>
               {cartItems.map((item) => (
                 <ListGroup.Item key={item._id}>
                   <Row className="align-items-center">

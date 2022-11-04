@@ -25,22 +25,38 @@ function Product({ product }) {
     });
   };
   return (
-    <Card key={product.slug}>
+    <Card className="shadow-sm" key={product.slug}>
       <Link to={`/product/${product.slug}`}>
         <img src={product.image} className="card-img-top" alt={product.name} />
       </Link>
       <Card.Body>
-        <Link to={`/product/${product.slug}`}>
-          <Card.Title>{product.name}</Card.Title>
-        </Link>
-        <Card.Text>${product.price}</Card.Text>
-        {product.countInStock === 0 ? (
-          <Button variant="light" disabled>
-            Out of Stock
-          </Button>
-        ) : (
-          <Button onClick={() => addToCartHandler(product)}>Add to cart</Button>
-        )}
+      <div className="container">
+          <div className="row">
+            <Link to={`/product/${product.slug}`}>
+              <Card.Title>{product.name}</Card.Title>
+            </Link>
+          </div>
+          <div className="row mt-3">
+            <div className="col d-flex align-items-center">
+              <Card.Text>
+                <h4 className="m-0 font-monospace">
+                  ${product.price}
+                </h4>
+              </Card.Text>
+            </div>
+            <div className="col">
+              {product.countInStock === 0 ? (
+                <Button className="shadow-sm w-100 btn-light" disabled>
+                  &#10060; Out of Stock
+                </Button>
+              ) : (
+                <Button className="shadow-sm w-100 btn-light" onClick={() => addToCartHandler(product)}>
+                  &#128722; Add to cart
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
       </Card.Body>
     </Card>
   );

@@ -87,6 +87,11 @@ export default function SigninScreen() {
         <div className="mb-3">
           <Link to={'/forgotpassword'}>Forgot Password?</Link>
         </div>
+        <Recaptcha
+          className='mb-3'
+          sitekey="6LfBO1wiAAAAABMihKPtNV-GN0nqvZdvarzmIEV_"
+          ref={captchaRef}
+        />
         <div className="mb-3">
           <Button type="submit">Sign In</Button>
         </div>
@@ -94,10 +99,6 @@ export default function SigninScreen() {
           New Customer?{' '}
           <Link to={`/signup?redirect=${redirect}`}>Create your account</Link>
         </div>
-        <Recaptcha
-          sitekey="6LfBO1wiAAAAABMihKPtNV-GN0nqvZdvarzmIEV_"
-          ref={captchaRef}
-        />
       </Form>
     </Container>
   );

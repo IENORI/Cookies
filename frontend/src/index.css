@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #F5F5F7;
 }
 
 .site-container {
@@ -75,4 +76,9 @@ main {
 
 #products{
   float: left;
+}
+
+.card-img-top {
+  object-fit: cover;
+  height: 200px;
 }

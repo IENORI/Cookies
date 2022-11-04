@@ -108,15 +108,15 @@ function App() {
                 <Container>
                   {!userInfo ? (
                     <LinkContainer to="/">
-                      <NavBar.Brand>Cookies</NavBar.Brand>
+                      <NavBar.Brand>&#127850; Cookies</NavBar.Brand>
                     </LinkContainer>
                   ) : userInfo.isAdmin ? (
                     <LinkContainer to="/admin/productlist">
-                      <NavBar.Brand>Cookies</NavBar.Brand>
+                      <NavBar.Brand>&#127850; Cookies</NavBar.Brand>
                     </LinkContainer>
                   ) : (
                     <LinkContainer to="/">
-                      <NavBar.Brand>Cookies</NavBar.Brand>
+                      <NavBar.Brand>&#127850; Cookies</NavBar.Brand>
                     </LinkContainer>
                   )}
                   <NavbarToggle ariacontrols="basic-navbar-nav" />
@@ -126,7 +126,7 @@ function App() {
                         <Link to="/cart" className="nav-link">
                           Cart
                           {cart.cartItems.length > 0 && (
-                            <Badge pill bg="danger">
+                            <Badge pill bg="danger" className="ms-1">
                               {cart.cartItems.reduce(
                                 (a, c) => a + c.quantity,
                                 0
@@ -138,7 +138,7 @@ function App() {
                         <Link to="/cart" className="nav-link">
                           Cart
                           {cart.cartItems.length > 0 && (
-                            <Badge pill bg="danger">
+                            <Badge pill bg="danger" className="ms-1">
                               {cart.cartItems.reduce(
                                 (a, c) => a + c.quantity,
                                 0
