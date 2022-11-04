@@ -193,9 +193,18 @@ orderRouter.delete(
   '/delete/:id',
   isAuth,
   expressAsyncHandler(async (req, res) => {
+
+    const orderDeleteLog = new Log({
+      user: req.user._id,
+      isAdmin: req.user.isAdmin,
+      statusCode: "200",
+      activity: "Deleted Order " + req.params.id + " Successfully",
+    })
+
     const id = req.params.id
     const order = await Order.findByIdAndRemove(id).exec();
-    res.send("order deleted");
+    res.send("Order Deleted");
+    await orderDeleteLog.save();
     return;
   })
 );
