@@ -40,7 +40,7 @@ export default function OrderHistoryScreen() {
         console.log(data);
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
+        dispatch({ type: 'FETCH_FAIL', payload: 'An error has occured while loading your orders, please try again later.' });
       }
     };
     fetchData();

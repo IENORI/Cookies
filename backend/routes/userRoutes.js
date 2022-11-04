@@ -143,6 +143,16 @@ userRouter.post(
 userRouter.post(
   '/signup',
   expressAsyncHandler(async (req, res) => {
+    const token = req.body.token;
+    //sends secret key and response token to google
+    const captchaResult = await signUpFunction.verifyCaptcha(token);
+
+    if (captchaResult === 'Captcha Error') {
+      res.status(401).send({ message: captchaResult }); //401 is unauthorized
+      await captchaLog.save();
+      return;
+    }
+
     // validate input fields
     const validFields = signUpFunction.validateSignUpFields(
       req.body.name,
@@ -353,7 +363,8 @@ userRouter.post(
       }
       res.send(`Password reset request have been sent to ${user.email}`);
     } else {
-      res.status(404).send({ message: 'Email does not exist' });
+      //Email doesn't exist, but showing same result to prevent others from checking which email has an account
+      res.send(`Password reset request have been sent to ${req.body.email}`);
     }
   })
 );

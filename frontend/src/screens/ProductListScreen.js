@@ -58,7 +58,7 @@ export default function ProductListScreen() {
       ctxDispatch({ type: 'FILL_PRODUCTS', payload: data_filter });
       dispatch({ type: 'FETCH_SUCCESS' });
     } catch (err) {
-      dispatch({ type: 'FETCH_FAIL', payload: err.message });
+      dispatch({ type: 'FETCH_FAIL', payload: 'An error has occured while loading products, please try again later.' });
     }
   };
 
@@ -72,7 +72,7 @@ export default function ProductListScreen() {
       } catch (err) {
         dispatch({ 
           type: 'FETCH_FAIL', 
-          payload: err.message });
+          payload: 'An error has occured while loading products, please try again later.' });
       }
     };
     fetchData();

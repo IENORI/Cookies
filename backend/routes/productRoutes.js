@@ -121,6 +121,14 @@ productRouter.post(
   isAuth,
   upload.single("imageFile"),
   expressAsyncHandler(async (req, res) => {
+
+    const createProductFLog = new Log({
+      user: req.user._id,
+      isAdmin: req.user.isAdmin,
+      statusCode: "404",
+      activity: "Admin Failed to Create Product",
+    })
+
     if (req.user.isAdmin) {
       if (alphanumeric(req.body.name) && alphanumeric(req.body.category)
         && alphanumeric(req.body.description) && numbersOnly(req.body.price)
@@ -136,10 +144,18 @@ productRouter.post(
         });
         const product = await newProduct.save();
         const products = await Product.find();
+        const createProductLog = new Log({
+          user: req.user._id,
+          isAdmin: req.user.isAdmin,
+          statusCode: "200",
+          activity: "Admin Successfully Created Product: " + product.name,
+        })
         res.send(products);
+        await createProductLog.save();
       }
       else {
         res.status(404).send({ message: "Creation Failed" });
+        await createProductFLog.save();
       }
     }
     else {
@@ -154,13 +170,27 @@ productRouter.delete(
   "/delete/:id",
   isAuth,
   expressAsyncHandler(async (req, res) => {
+    const deleteProductFLog = new Log({
+      user: req.user._id,
+      isAdmin: req.user.isAdmin,
+      statusCode: "404",
+      activity: "Admin Failed to Delete Product",
+    })
     if (req.user.isAdmin) {
       const id = req.params.id;
       const product = await Product.findByIdAndRemove(id).exec();
+      const deleteProductLog = new Log({
+        user: req.user._id,
+        isAdmin: req.user.isAdmin,
+        statusCode: "200",
+        activity: "Admin Successfully Deleted Product: " + product.name,
+      })
       res.send("Product deleted");
+      await deleteProductLog.save();
       return;
     } else {
       res.status(404).send({ message: "UNAUTHORIZED ACCESS" });
+      await deleteProductFLog.save();
     }
   })
 );

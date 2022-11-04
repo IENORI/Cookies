@@ -38,7 +38,7 @@ export default function LogScreen() {
         });
         dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
       } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: err.message });
+        dispatch({ type: 'FETCH_FAIL', payload: 'An error has occured while fetching logs, please try again later' });
       }
     };
     fetchData();
