@@ -35,6 +35,7 @@ import axios from 'axios';
 import LoadingBox from './components/LoadingBox';
 import MessageBox from './components/MessageBox';
 import PasswordResetScreen from './screens/PasswordResetScreen';
+import LogScreen from './screens/LogScreen';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -184,6 +185,9 @@ function App() {
                           <LinkContainer to="/admin/userlist">
                             <NavDropDown.Item>Users</NavDropDown.Item>
                           </LinkContainer>
+                          <LinkContainer to="/admin/loglist">
+                            <NavDropDown.Item>Logs</NavDropDown.Item>
+                          </LinkContainer>
                         </NavDropDown>
                       )}
                     </Nav>
@@ -241,6 +245,14 @@ function App() {
                         <AdminRoute>
                           <UserListScreen />
                         </AdminRoute>
+                      }
+                    ></Route>
+                    <Route
+                      path="/admin/loglist"
+                      element={
+                        <AdminRoute>
+                          <LogScreen />
+                        </AdminRoute> 
                       }
                     ></Route>
                   </Routes>
