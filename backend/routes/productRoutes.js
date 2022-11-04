@@ -8,6 +8,7 @@ import { isAuth } from "../utils.js";
 import dotenv from "dotenv";
 import Log from '../models/logModel.js';
 import { alphanumeric } from "../utils.js";
+import { alphanumericWithPunctuation } from "../utils.js";
 import { numbersOnly } from "../utils.js";
 
 
@@ -121,17 +122,15 @@ productRouter.post(
   isAuth,
   upload.single("imageFile"),
   expressAsyncHandler(async (req, res) => {
-
     const createProductFLog = new Log({
       user: req.user._id,
       isAdmin: req.user.isAdmin,
       statusCode: "404",
       activity: "Admin Failed to Create Product",
     })
-
     if (req.user.isAdmin) {
       if (alphanumeric(req.body.name) && alphanumeric(req.body.category)
-        && alphanumeric(req.body.description) && numbersOnly(req.body.price)
+        && alphanumericWithPunctuation(req.body.description) && numbersOnly(req.body.price)
         && numbersOnly(req.body.quantity)) {
         const newProduct = new Product({
           name: req.body.name,
@@ -149,7 +148,7 @@ productRouter.post(
           isAdmin: req.user.isAdmin,
           statusCode: "200",
           activity: "Admin Successfully Created Product: " + product.name,
-        })
+        });
         res.send(products);
         await createProductLog.save();
       }

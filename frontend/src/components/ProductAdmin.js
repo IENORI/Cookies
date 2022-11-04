@@ -122,13 +122,13 @@ function ProductAdmin(props) {
                   controlId="exampleForm.ControlTextarea1"
                 >
                   <Form.Label>Price</Form.Label>
-                  <div class="input-group">
-                    <span class="input-group-text">$</span>
+                  <div className="input-group">
+                    <span className="input-group-text">$</span>
                     <Form.Control
                       type="number"
                       value={price}
-                      min="0.00"
-                      step="0.01"
+                      min="1"
+                      step="1"
                       placeholder="Cost Per Unit"
                       required
                       onChange={(e) => setPrice(e.target.value)}
@@ -172,7 +172,7 @@ function ProductAdmin(props) {
             </Container>
           </Modal.Body>
           <Modal.Footer>
-            <div class="input-group">
+            <div className="input-group">
               <Button
                 variant="danger"
                 onClick={() => deleteProductHandler(product._id)}
