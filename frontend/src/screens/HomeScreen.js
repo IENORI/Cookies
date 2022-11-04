@@ -94,7 +94,7 @@ function HomeScreen() {
           <Container className="px-0">
             <Row>
               {products.map((product) => (
-                <Col key={product.slug} md={6} xl={4} className="mb-3">
+                <Col key={product.slug} md={6} xl={4} className="mb-4">
                   <Product product={product} />
                 </Col>
               ))}
