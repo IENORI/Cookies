@@ -43,7 +43,7 @@ export default function OrderManageScreen() {
       ctxDispatch({ type: 'FILL_ORDERS', payload: data_filter });
       dispatch({ type: 'FETCH_SUCCESS' });
     } catch (err) {
-      dispatch({ type: 'FETCH_FAIL', payload: err.message });
+      dispatch({ type: 'FETCH_FAIL', payload: 'An error has occured while loading all orders, please try again later.' });
     }
   };
 

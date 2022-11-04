@@ -40,7 +40,7 @@ export default function UserListScreen() {
         ctxDispatch({ type: 'FILL_USER', payload: result.data });
         dispatch({ type: 'FETCH_SUCCESS' });
       } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: err.message });
+        dispatch({ type: 'FETCH_FAIL', payload: 'An error has occured while loading list of users, please try again later.' });
       }
       //setProducts(result.data);
     };
