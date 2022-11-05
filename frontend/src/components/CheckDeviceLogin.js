@@ -49,6 +49,7 @@ export default function CheckDeviceLogin({ children }) {
     localStorage.removeItem('userInfo');
     localStorage.removeItem('shippingAddress');
     localStorage.removeItem('paymentMethod');
+    localStorage.removeItem('validUserIdEmail'); //nuke localstorage
     window.location.href = '/signin'; //redirect user back to sign in screen
   };
 
