@@ -14,10 +14,10 @@ function Log(props) {
     <ListGroup as="ol">
       <ListGroup.Item className="d-flex justify-content-between align-items-start">
         <div className="ms-2 me-auto">
-          <div className="fw-bold">Status Code: {statusCode}</div>
-          User: {user} &nbsp;
-          Time: {timestamp.toLocaleString()} &nbsp; 
-          Activity: {activity}
+          <div className="fw-bold">Status Code: {statusCode > 201 ? <span className="badge bg-warning">{statusCode}</span> : <span className="badge bg-secondary">{statusCode}</span>}</div>
+          User: <code>{user}</code> &nbsp;
+          Time: <code>{timestamp.toLocaleString()}</code> &nbsp; 
+          Activity: <code>{activity}</code>
         </div>
       </ListGroup.Item>
     </ListGroup>
