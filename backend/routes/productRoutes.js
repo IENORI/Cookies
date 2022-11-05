@@ -24,6 +24,8 @@ const mimelist = [
   'image/jpeg',
 ];
 
+const fileSizeLimit = 8192000; // 8MB
+
 const spaceEndPoint = new aws.Endpoint(process.env.SPACES_ENDPOINT);
 const s3 = new aws.S3({
   endpoint: spaceEndPoint,
@@ -39,6 +41,16 @@ const S3URL =
   "/";
 var dynamicFileName;
 const upload = multer({
+  fileFilter: (req, file, cb) => {
+    const fileSize = parseInt(req.headers["content-length"]);
+    if (fileSize > fileSizeLimit){
+      return cb(new Error('File too big!'))
+    }
+    if (!mimelist.includes(file.mimetype)) {
+      return cb(new Error('only .png, .jpg and .jpeg files are allowed'))
+    }
+    cb(null, true)
+  },
   storage: multerS3({
     s3: s3,
     bucket: process.env.SPACES_BUCKET,
@@ -49,13 +61,6 @@ const upload = multer({
       cb(null, fileName);
     },
   }),
-  fileFilter: (req, file, cb) => {
-    if (!mimelist.includes(file.mimetype)) {
-      return cb(new Error('only .png, .jpg and .jpeg files are allowed'))
-    }
-
-    cb(null, true)
-  }
 });
 
 //the / appends onto the app.use route that is called
