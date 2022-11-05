@@ -69,32 +69,31 @@ function ProductScreen() {
     <div>{error}</div>
   ) : (
     <div>
-      <Row>
-        <Col md={6}>
-          <img className="img-large" src={product.image} alt={product.name} />
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Product Listing - {product.name}</li>
+        </ol>
+      </nav>
+      <Row className="justify-content-center">
+        <Col md={7} xxl={6}>
+          <Card className="shadow-md">
+            <Card.Body>
+              <img className="shadow img-large rounded mx-auto d-block" src={product.image} alt={product.name} />
+            </Card.Body>
+          </Card>
         </Col>
-        <Col md={3}>
-          <ListGroup variant="flush">
-            <ListGroup.Item>
-              <Helmet>
-                <title>{product.name}</title>
-              </Helmet>
-              <h1>{product.name}</h1>
-            </ListGroup.Item>
-            <ListGroup.Item>Price: ${product.price}</ListGroup.Item>
-            <ListGroup.Item>
-              <p>{product.description}</p>
-            </ListGroup.Item>
-          </ListGroup>
-        </Col>
-        <Col md={3}>
+        <Col md={5} xxl={4}>
           <Card>
             <Card.Body>
               <ListGroup variant="flush">
                 <ListGroup.Item>
+                  <Row><span className="display-6">{product.name}</span></Row>
+                </ListGroup.Item>
+                <ListGroup.Item>
                   <Row>
                     <Col>Price: </Col>
-                    <Col>${product.price} </Col>
+                    <Col>$ <code><b>{product.price}</b></code></Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
@@ -109,14 +108,16 @@ function ProductScreen() {
                     </Col>
                   </Row>
                 </ListGroup.Item>
-
+                <ListGroup.Item>
+                  <div className="mt-3 mb-3">
+                    <span>{product.description}</span>
+                  </div>
+                </ListGroup.Item>
                 {product.countInStock > 0 && (
                   <ListGroup.Item>
-                    <div className="d-grid">
-                      <Button onClick={addToCartHandler} variant="primary">
-                        Add to Cart
-                      </Button>
-                    </div>
+                    <Button className="shadow-sm w-100 mt-3 btn-light" onClick={() => addToCartHandler(product)}>
+                      &#128722; Add to cart
+                    </Button>
                   </ListGroup.Item>
                 )}
               </ListGroup>

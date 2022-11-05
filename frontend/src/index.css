@@ -33,6 +33,7 @@ main {
 }
 
 .img-large {
+  width: 500px;
   max-width: 100%;
 }
 .img-thumbnail {
@@ -81,4 +82,13 @@ main {
 .card-img-top {
   object-fit: cover;
   height: 200px;
+}
+
+.fontAccentColor {
+  color: #6610f2;
+}
+
+.btn-light:hover {
+  color: #F5F5F7;
+  background-color: #6610f2;
 }

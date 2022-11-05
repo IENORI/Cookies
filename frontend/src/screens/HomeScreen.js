@@ -65,9 +65,16 @@ function HomeScreen() {
       <header>
         <div className="container rounded-3 d-flex align-items-center justify-content-center" style={backgroundImage}>
           <div className="row">
-            <div className="text-center text-white">
-                <h1>The absolute BEST cookies in town!</h1>
-            </div>
+            <figure class="text-end">
+              <blockquote class="blockquote">
+                <div className="text-center text-white display-5">
+                  The absolute <strong>BEST</strong> cookies in town!
+                </div>
+              </blockquote>
+              <figcaption class="blockquote-footer text-white">
+                trust me bro
+              </figcaption>
+            </figure>
           </div>
         </div>
       </header>
@@ -92,9 +99,9 @@ function HomeScreen() {
           <div>{error}</div>
         ) : (
           <Container className="px-0">
-            <Row>
+            <Row className="justify-content-center">
               {products.map((product) => (
-                <Col key={product.slug} md={6} xl={4} className="mb-4">
+                <Col key={product.slug} md={6} lg={5} xxl={4} className="mb-4">
                   <Product product={product} />
                 </Col>
               ))}
