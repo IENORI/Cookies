@@ -6,7 +6,6 @@ import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import LoadingBox from '../components/LoadingBox';
 import { Store } from '../Store';
-import { getError } from '../utils';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -79,11 +78,23 @@ export default function OrderHistoryScreen() {
               {orders.map((order) => (
                 <tr key={order._id}>
                   <td><code>{order._id}</code></td>
-                  <td>{order.createdAt.substring(0, 10)}</td>
-                  <td>$ <code>{order.totalPrice.toFixed(2)}</code></td>
-                  <td>{order.isPaid ? order.updatedAt.substring(0, 10) : <b>No</b>}</td>
+                  <td><span className="font-monospace">{order.createdAt.substring(0, 10)}</span></td>
+                  <td>$<code><b>{order.totalPrice.toFixed(2)}</b></code></td>
                   <td>
-                    {order.isDelivered ? order.updatedAt.toString().substring(0, 10) : <b>No</b>}
+                    {order.isPaid
+                      ?
+                      <div><span className="badge bg-success">Yes</span><br/><span className="badge bg-secondary text-wrap">{order.updatedAt.toString().substring(0, 10)}</span></div>
+                      : 
+                      <span className="badge bg-danger">No</span>
+                    }
+                  </td>
+                  <td>
+                    {order.isDelivered
+                      ?
+                      <div><span className="badge bg-success">Yes</span><br/><span className="badge bg-secondary text-wrap">{order.updatedAt.toString().substring(0, 10)}</span></div>
+                      :
+                      <span className="badge bg-danger">No</span>
+                    }
                   </td>
                   <td>
                     <Button
