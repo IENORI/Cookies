@@ -92,9 +92,9 @@ function HomeScreen() {
           <div>{error}</div>
         ) : (
           <Container className="px-0">
-            <Row>
+            <Row className="justify-content-center">
               {products.map((product) => (
-                <Col key={product.slug} md={6} xl={4} className="mb-4">
+                <Col key={product.slug} md={6} lg={5} xxl={4} className="mb-4">
                   <Product product={product} />
                 </Col>
               ))}
