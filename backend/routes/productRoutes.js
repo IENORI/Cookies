@@ -10,11 +10,19 @@ import Log from '../models/logModel.js';
 import { alphanumeric } from "../utils.js";
 import { alphanumericWithPunctuation } from "../utils.js";
 import { numbersOnly } from "../utils.js";
+import { fileTypeFromStream } from "file-type";
+import fetch from "node-fetch";
 
 
 dotenv.config(); //to fetch variables
 
 const productRouter = express.Router();
+
+const mimelist = [
+  'image/png',
+  'image/jpg',
+  'image/jpeg',
+];
 
 const spaceEndPoint = new aws.Endpoint(process.env.SPACES_ENDPOINT);
 const s3 = new aws.S3({
@@ -41,6 +49,13 @@ const upload = multer({
       cb(null, fileName);
     },
   }),
+  fileFilter: (req, file, cb) => {
+    if (!mimelist.includes(file.mimetype)) {
+      return cb(new Error('only .png, .jpg and .jpeg files are allowed'))
+    }
+
+    cb(null, true)
+  }
 });
 
 //the / appends onto the app.use route that is called
@@ -129,6 +144,18 @@ productRouter.post(
       activity: "Admin Failed to Create Product",
     })
     if (req.user.isAdmin) {
+      //Check file to ensure only valid file formats are uploaded
+      const url = req.file.location;
+
+      const file_response = await fetch(url);
+
+      const metadata = await fileTypeFromStream(file_response.body);
+      if (!mimelist.includes(metadata.mime)) {
+        res.status(404).send({ message: "Invalid file format!" });
+        await createProductFLog.save();
+        return;
+      }
+
       if (alphanumeric(req.body.name) && alphanumeric(req.body.category)
         && alphanumericWithPunctuation(req.body.description) && numbersOnly(req.body.price)
         && numbersOnly(req.body.quantity)) {
