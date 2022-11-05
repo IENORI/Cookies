@@ -32,15 +32,15 @@ function Product({ product }) {
       <Card.Body>
       <div className="container">
           <div className="row">
-            <Link to={`/product/${product.slug}`}>
-              <Card.Title>{product.name}</Card.Title>
+            <Link className="lead text-decoration-none link-dark" to={`/product/${product.slug}`}>
+              {product.name}
             </Link>
           </div>
           <div className="row mt-3">
             <div className="col d-flex align-items-center">
               <Card.Text>
-                <h4 className="m-0 font-monospace">
-                  ${product.price}
+                <h4 className="m-0">
+                  <span className="fontAccentColor">${product.price}</span>
                 </h4>
               </Card.Text>
             </div>
