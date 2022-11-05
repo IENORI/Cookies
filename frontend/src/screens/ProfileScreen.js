@@ -22,7 +22,7 @@ const reducer = (state, action) => {
 };
 
 export default function ProfileScreen() {
-  const { state } = useContext(Store);
+  const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
 
   const [name, setName] = useState(userInfo.name);
@@ -32,7 +32,7 @@ export default function ProfileScreen() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [oldpassword, setOldPassword]= useState("");
 
-  const [dispatch] = useReducer(reducer, {
+  const [{ loadingUpdate }, dispatch] = useReducer(reducer, {
     loadingUpdate: false,
   });
 
