@@ -5,10 +5,11 @@ import Button from "react-bootstrap/Button";
 import PasswordCheckList from "react-password-checklist";
 import { Helmet } from "react-helmet-async";
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Store } from "../Store";
 import { toast } from "react-toastify";
 import { getError } from "../utils";
+import Recaptcha from 'react-google-recaptcha'; // remove <React.StrictMode> tag in index.js to remove recaptcha bug cause from back button, anyway strict mode is only use in development and not in production application
 
 export default function SignupScreen() {
   const navigate = useNavigate();
@@ -24,8 +25,12 @@ export default function SignupScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store); //to use the context that was already defined
   const { userInfo } = state;
 
+  const captchaRef = useRef(null);
+
   const submitHandler = async (e) => {
     e.preventDefault(); //prevents page from refreshing
+    const token = captchaRef.current.getValue();
+    captchaRef.current.reset();
     try {
       const conditions = [
         password === confirmPassword,
@@ -36,6 +41,7 @@ export default function SignupScreen() {
         const { data } = await axios.post(
           "/api/users/signup",
         {
+          token,
           name,
           email,
           password,
@@ -104,6 +110,10 @@ export default function SignupScreen() {
         <div className="mb-3">
           <Button type="submit">Sign Up</Button>
         </div>
+        <Recaptcha
+          sitekey="6LfBO1wiAAAAABMihKPtNV-GN0nqvZdvarzmIEV_"
+          ref={captchaRef}
+        />
         <div className="mb-3">
           Already have an account?{" "}
           <Link to={`/signin?redirect=${redirect}`}>Sign In</Link>

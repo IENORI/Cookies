@@ -21,6 +21,7 @@ const initialState = {
   userList: [],
   products: [],
   orders: [],
+  logs: [],
 };
 function reducer(state, action) {
   switch (action.type) {
@@ -31,8 +32,8 @@ function reducer(state, action) {
       );
       const cartItems = existItem //to add existing item into cart
         ? state.cart.cartItems.map((item) =>
-            item._id === existItem._id ? newItem : item
-          )
+          item._id === existItem._id ? newItem : item
+        )
         : [...state.cart.cartItems, newItem]; //otherwise just add the new item into cart if does not exist
       localStorage.setItem('cartItems', JSON.stringify(cartItems)); //key, value ; to save in local storage so can refresh
       return { ...state, cart: { ...state.cart, cartItems } };

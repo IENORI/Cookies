@@ -5,74 +5,43 @@ import updateProfileFunction from '../functions/updateProfileFunction.js';
 
 describe('update personal account unit test', function () {
   // testing invalid name field
-  describe('Validate update profile fields test', function () {
-    it('Result should be invalid name format', function () {
-      const result =  updateProfileFunction.validateUpdateProfileFields("testname1", "test@gmail.com", "Testoldpassword1", "TestnewPassword1");
-      expect(result).to.equal('Invalid name format!');
-    });
-  });
-
-  // testing invalid email field
-  describe('Validate update profile fields test', function () {
-    it('Result should be invalid email format', function () {
-      const result =  updateProfileFunction.validateUpdateProfileFields("testname", "test@", "Testoldpassword1", "TestnewPassword1");
-      expect(result).to.equal('Invalid email format!');
-    });
-  });
-
-  // testing invalid old password field
-  describe('Validate update profile fields test', function () {
-    it('Result should be invalid old password format', function () {
-      const result =  updateProfileFunction.validateUpdateProfileFields("testname", "test@gmail.com", "testoldpassword", "TestnewPassword1");
+  describe('Invalid old password test', function () {
+    it('Result should be invalid oldpassword format', function () {
+      const result =  updateProfileFunction.validatePasswordUpdateFields("Testoldpassword", "TestnewPassword1");
       expect(result).to.equal('Invalid oldpassword format!');
     });
   });
 
-  // testing invalid new password fields
-  describe('Validate update profile fields test', function () {
-    it('Result should be invalid new password format', function () {
-      const result =  updateProfileFunction.validateUpdateProfileFields("testname", "test@gmail.com", "Testoldpassword1", "TestnewPassword");
+  // testing invalid name field
+  describe('Invalid new password test', function () {
+    it('Result should be invalid newpassword format', function () {
+      const result =  updateProfileFunction.validatePasswordUpdateFields("Testoldpassword1", "TestnewPassword");
       expect(result).to.equal('Invalid newPassword format!');
     });
   });
 
-  // testing valid update fields
-  describe('Validate update profile fields test', function () {
+  // testing invalid name field
+  describe('Valid passwords test', function () {
     it('Result should be valid', function () {
-      const result =  updateProfileFunction.validateUpdateProfileFields("testname", "test@gmail.com", "Testoldpassword1", "TestnewPassword1");
+      const result =  updateProfileFunction.validatePasswordUpdateFields("Testoldpassword1", "TestnewPassword1");
       expect(result).to.equal('valid');
     });
   });
 
-    // testing empty field
-    describe('Validate update profile fields test', function () {
-        it('Result should be not be valid', function () {
-            const result =  updateProfileFunction.validateUpdateProfileFields("", "test@gmail.com", "Testoldpassword1", "TestnewPassword1");
-            expect(result).to.not.equal('valid');
-        });
+  // testing invalid name field
+  describe('Empty password test', function () {
+    it('Result should be invalid newpassword format', function () {
+      const result =  updateProfileFunction.validatePasswordUpdateFields("", "");
+      expect(result).to.equal('Invalid oldpassword format!');
     });
+  });
 
-    // testing empty field
-    describe('Validate update profile fields test', function () {
-        it('Result should be not be valid', function () {
-            const result =  updateProfileFunction.validateUpdateProfileFields("testname", "", "Testoldpassword1", "TestnewPassword1");
-            expect(result).to.not.equal('valid');
-        });
+  // testing invalid name field
+  describe('Common password test', function () {
+    it('Result should be invalid newpassword format', function () {
+      const result =  updateProfileFunction.validatePasswordUpdateFields("Testoldpassword1", "rush2112");
+      expect(result).to.equal('Common password entered! For security reasons please use another password.');
     });
+  });
 
-    // testing empty field
-    describe('Validate update profile fields test', function () {
-        it('Result should be not be valid', function () {
-            const result =  updateProfileFunction.validateUpdateProfileFields("testname", "test@gmail.com", "", "TestnewPassword1");
-            expect(result).to.not.equal('valid');
-        });
-    });
-
-    // testing empty field
-    describe('Validate update profile fields test', function () {
-        it('Result should be not be valid', function () {
-            const result =  updateProfileFunction.validateUpdateProfileFields("testname", "test@gmail.com", "Testoldpassword1", "");
-            expect(result).to.not.equal('valid');
-        });
-    });
 });

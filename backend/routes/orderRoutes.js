@@ -161,12 +161,29 @@ orderRouter.put(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
+
+    const orderUpdateLog = new Log({
+      user: req.user._id,
+      isAdmin: req.user.isAdmin,
+      statusCode: "200",
+      activity: "Updated Order " + req.params.id + " Successfully",
+    })
+
+    const orderUpdateFLog = new Log({
+      user: req.user._id,
+      isAdmin: req.user.isAdmin,
+      statusCode: "404",
+      activity: "Order " + req.params.id + " Not Found",
+    })
+
     if (order) {
       order.isDelivered = req.body.isDelivered
       const updatedOrder = await order.save();
       res.send(updatedOrder);
+      await orderUpdateLog.save();
     } else {
       res.status(404).send({ message: 'Order not found' });
+      await orderUpdateFLog.save();
     }
   })
 );
@@ -176,9 +193,18 @@ orderRouter.delete(
   '/delete/:id',
   isAuth,
   expressAsyncHandler(async (req, res) => {
+
+    const orderDeleteLog = new Log({
+      user: req.user._id,
+      isAdmin: req.user.isAdmin,
+      statusCode: "200",
+      activity: "Deleted Order " + req.params.id + " Successfully",
+    })
+
     const id = req.params.id
     const order = await Order.findByIdAndRemove(id).exec();
-    res.send("order deleted");
+    res.send("Order Deleted");
+    await orderDeleteLog.save();
     return;
   })
 );

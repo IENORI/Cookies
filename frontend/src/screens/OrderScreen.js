@@ -99,7 +99,7 @@ export default function OrderScreen() {
         });
         dispatch({ type: "FETCH_SUCCESS", payload: data });
       } catch (err) {
-        dispatch({ type: "FETCH_FAIL", payload: getError(err) });
+        dispatch({ type: "FETCH_FAIL", payload: 'An error has occured while loading order, please try again later.' });
       }
     };
 

@@ -11,7 +11,7 @@ export default function CheckDeviceLogin({ children }) {
 
   const checkMultipleLogInHandler = async (e) => {
     try {
-      const { data } = await axios.post('/api/users/checkloginid', {
+      await axios.post('/api/users/checkloginid', {
         loginId: userInfo.login_id,
         userId: userInfo._id,
       });

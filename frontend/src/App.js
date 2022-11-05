@@ -35,6 +35,7 @@ import axios from 'axios';
 import LoadingBox from './components/LoadingBox';
 import MessageBox from './components/MessageBox';
 import PasswordResetScreen from './screens/PasswordResetScreen';
+import LogScreen from './screens/LogScreen';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -79,7 +80,7 @@ function App() {
       };
       fetchData();
     }
-  }, []);
+  }, [ctxDispatch, userInfo]);
 
   const signoutHandler = () => {
     ctxDispatch({ type: 'USER_SIGNOUT' });
@@ -107,15 +108,15 @@ function App() {
                 <Container>
                   {!userInfo ? (
                     <LinkContainer to="/">
-                      <NavBar.Brand>Cookies</NavBar.Brand>
+                      <NavBar.Brand>&#127850; Cookies</NavBar.Brand>
                     </LinkContainer>
                   ) : userInfo.isAdmin ? (
                     <LinkContainer to="/admin/productlist">
-                      <NavBar.Brand>Cookies</NavBar.Brand>
+                      <NavBar.Brand>&#127850; Cookies</NavBar.Brand>
                     </LinkContainer>
                   ) : (
                     <LinkContainer to="/">
-                      <NavBar.Brand>Cookies</NavBar.Brand>
+                      <NavBar.Brand>&#127850; Cookies</NavBar.Brand>
                     </LinkContainer>
                   )}
                   <NavbarToggle ariacontrols="basic-navbar-nav" />
@@ -125,7 +126,7 @@ function App() {
                         <Link to="/cart" className="nav-link">
                           Cart
                           {cart.cartItems.length > 0 && (
-                            <Badge pill bg="danger">
+                            <Badge pill bg="danger" className="ms-1">
                               {cart.cartItems.reduce(
                                 (a, c) => a + c.quantity,
                                 0
@@ -137,7 +138,7 @@ function App() {
                         <Link to="/cart" className="nav-link">
                           Cart
                           {cart.cartItems.length > 0 && (
-                            <Badge pill bg="danger">
+                            <Badge pill bg="danger" className="ms-1">
                               {cart.cartItems.reduce(
                                 (a, c) => a + c.quantity,
                                 0
@@ -183,6 +184,9 @@ function App() {
                           </LinkContainer>
                           <LinkContainer to="/admin/userlist">
                             <NavDropDown.Item>Users</NavDropDown.Item>
+                          </LinkContainer>
+                          <LinkContainer to="/admin/loglist">
+                            <NavDropDown.Item>Logs</NavDropDown.Item>
                           </LinkContainer>
                         </NavDropDown>
                       )}
@@ -241,6 +245,14 @@ function App() {
                         <AdminRoute>
                           <UserListScreen />
                         </AdminRoute>
+                      }
+                    ></Route>
+                    <Route
+                      path="/admin/loglist"
+                      element={
+                        <AdminRoute>
+                          <LogScreen />
+                        </AdminRoute> 
                       }
                     ></Route>
                   </Routes>

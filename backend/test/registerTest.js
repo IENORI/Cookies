@@ -4,6 +4,14 @@ const expect = chai.expect;
 import signUpFunction from '../functions/signUpFunction.js';
 
 describe('register account unit test', function () {
+  // testing invalid captcha
+  describe('Captcha test', function () {
+    it('Captcha should fail', async function () {
+      const result = await signUpFunction.verifyCaptcha('invalidToken');
+      expect(result).to.equal('Captcha Error');
+    });
+  });
+
   // testing invalid name field
   describe('Validate sign up fields test', function () {
     it('Result should be invalid name format', function () {

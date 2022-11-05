@@ -14,7 +14,7 @@ import { lettersOnly } from '../utils.js';
 import { passwordCheck } from '../utils.js';
 import signInFunction from '../functions/signInFunction.js';
 import signUpFunction from '../functions/signUpFunction.js';
-import updateProfileFunction from '../functions/updateProfileFunction.js';
+import validatePasswordUpdateFields from '../functions/updateProfileFunction.js';
 import forgotPasswordFunction from '../functions/forgotPasswordFunction.js';
 import Log from '../models/logModel.js';
 import * as EmailValidator from 'email-validator';
@@ -141,6 +141,16 @@ userRouter.post(
 userRouter.post(
   '/signup',
   expressAsyncHandler(async (req, res) => {
+    const token = req.body.token;
+    //sends secret key and response token to google
+    const captchaResult = await signUpFunction.verifyCaptcha(token);
+
+    if (captchaResult === 'Captcha Error') {
+      res.status(401).send({ message: captchaResult }); //401 is unauthorized
+      await captchaLog.save();
+      return;
+    }
+
     // validate input fields
     const validFields = signUpFunction.validateSignUpFields(
       req.body.name,
@@ -180,70 +190,6 @@ userRouter.post(
       token: generateToken(user),
       login_id: loginId, // generate unique id
     });
-  })
-);
-
-//profile
-userRouter.put(
-  '/profile',
-  isAuth,
-  expressAsyncHandler(async (req, res) => {
-    // validate email format
-    const emailValidateResult = updateProfileFunction.validateEmail(
-      req.body.email
-    );
-    if (emailValidateResult === 'Invalid email format!') {
-      res.status(400).send({ message: emailValidateResult });
-      return;
-    }
-    const validUpdatefields = updateProfileFunction.validateUpdateProfileFields(
-      req.body.name,
-      req.body.email,
-      req.body.oldpassword,
-      req.body.password
-    );
-    if (validUpdatefields != 'valid') {
-      res.status(400).send({ message: validUpdatefields });
-      return;
-    }
-
-    const user = await User.findById(req.user._id); //you can do it like this because it was passed over from the isAuth
-    const profileUpdateLog = new Log({
-      user: user._id,
-      isAdmin: user.isAdmin,
-      statusCode: "200",
-      activity: "User Successfully Updated Profile",
-    })
-    const profileUpdateFLog = new Log({
-      user: user._id,
-      isAdmin: user.isAdmin,
-      statusCode: "404",
-      activity: "User Failed To Update Profile",
-    })
-    if (user) {
-      //if user is found
-      user.name = req.body.name || user.name; //if requested to change, set it to the requested one, else take the default from db
-      user.email = req.body.email || user.email;
-      if (bcrypt.compareSync(req.body.oldpassword, user.password)) {
-        if (req.body.password) {
-          user.password = bcrypt.hashSync(req.body.password, 8); //8 is the salt
-          await profileUpdateLog.save();
-        }
-      } else {
-        res.status(404).send({ message: 'Update failed' });
-        await profileUpdateFLog.save();
-      }
-      const updatedUser = await user.save();
-      res.send({
-        _id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        isAdmin: updatedUser.isAdmin,
-        token: generateToken(updatedUser), //reupdate tokens and everything else
-      });
-    } else {
-      res.status(404).send({ message: 'User not found' });
-    }
   })
 );
 
@@ -376,7 +322,6 @@ userRouter.post(
   '/resetpassword',
   expressAsyncHandler(async (req, res) => {
     // validate email format
-    // validate email format
     const emailValidateResult = forgotPasswordFunction.validateEmail(req.body.email);
     if (emailValidateResult === 'Invalid email format!') {
       res.status(400).send({ message: emailValidateResult });
@@ -416,7 +361,8 @@ userRouter.post(
       }
       res.send(`Password reset request have been sent to ${user.email}`);
     } else {
-      res.status(404).send({ message: 'Email does not exist' });
+      //Email doesn't exist, but showing same result to prevent others from checking which email has an account
+      res.send(`Password reset request have been sent to ${req.body.email}`);
     }
   })
 );
@@ -482,22 +428,71 @@ userRouter.post(
   })
 );
 
-//update
+//update details
 userRouter.put(
-  '/update/:id',
+  '/update/details/:id',
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
-    if (user && lettersOnly(req.body.name) && EmailValidator.validate(req.body.email)) {
+    const profileUpdateLog = new Log({
+      user: user._id,
+      isAdmin: user.isAdmin,
+      statusCode: "200",
+      activity: "User Successfully Updated Profile",
+    });
+    const profileUpdateFLog = new Log({
+      user: user._id,
+      isAdmin: user.isAdmin,
+      statusCode: "404",
+      activity: "User Failed To Update Profile",
+    });
+
+    if (user && lettersOnly(req.body.name) && EmailValidator.validate(req.body.email)){
       user.name = req.body.name || user.name;
       user.email = req.body.email || user.email;
-      const updatedUser = await user.save();
-      const updatedUsers = await User.find({ isAdmin: false });
-      res.send(updatedUsers);
+      if (bcrypt.compareSync(req.body.verifyPassword, user.password)) {
+        await user.save();
+        await profileUpdateLog.save();
+        res.status(200).send();
+      } else {
+        res.status(404).send({ message: 'Update failed' });
+        await profileUpdateFLog.save();
+      }
     } else {
       res.status(404).send({ message: 'Update Failed' });
     }
+
   })
 );
 
+//update password
+userRouter.put(
+  '/update/password/:id',
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id);
+    const passwordUpdateLog = new Log({
+      user: user._id,
+      isAdmin: user.isAdmin,
+      statusCode: "200",
+      activity: "User Successfully Updated Password",
+    });
+    const passwordUpdateFLog = new Log({
+      user: user._id,
+      isAdmin: user.isAdmin,
+      statusCode: "404",
+      activity: "User Failed To Update Password",
+    });
+
+    if (bcrypt.compareSync(req.body.oldpassword, user.password)) {
+      user.password = bcrypt.hashSync(req.body.password, 8);
+      await user.save();
+      await passwordUpdateLog.save();
+      res.status(200).send();
+    } else {
+      res.status(200).send();
+      await passwordUpdateFLog.save();
+    }
+  })
+);
 export default userRouter;

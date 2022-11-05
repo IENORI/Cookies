@@ -58,7 +58,7 @@ export default function ProductListScreen() {
       ctxDispatch({ type: 'FILL_PRODUCTS', payload: data_filter });
       dispatch({ type: 'FETCH_SUCCESS' });
     } catch (err) {
-      dispatch({ type: 'FETCH_FAIL', payload: err.message });
+      dispatch({ type: 'FETCH_FAIL', payload: 'An error has occured while loading products, please try again later.' });
     }
   };
 
@@ -72,7 +72,7 @@ export default function ProductListScreen() {
       } catch (err) {
         dispatch({ 
           type: 'FETCH_FAIL', 
-          payload: err.message });
+          payload: 'An error has occured while loading products, please try again later.' });
       }
     };
     fetchData();
@@ -163,13 +163,13 @@ export default function ProductListScreen() {
                       controlId="exampleForm.ControlInput1"
                     >
                       <Form.Label>Price</Form.Label>
-                      <div class="input-group">
-                        <span class="input-group-text">$</span>
+                      <div className="input-group">
+                        <span className="input-group-text">$</span>
                         <Form.Control
                           type="number"
                           value={price}
-                          min="0.00"
-                          step="0.01"
+                          min="1"
+                          step="1"
                           autoFocus
                           placeholder="Cost Per Unit"
                           onChange={(e) => setPrice(e.target.value)}

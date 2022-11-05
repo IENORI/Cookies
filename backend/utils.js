@@ -38,11 +38,15 @@ export const lettersOnly = (string) => {
 }
 
 export const numbersOnly = (string) => {
-  return /^[0-9]+$/.test(string);
+  return /^[0-9.]+$/.test(string);
 }
 
 export const alphanumeric = (string) => {
   return /^[a-zA-Z0-9 ]+$/.test(string);
+}
+
+export const alphanumericWithPunctuation = (string) => {
+  return /^[a-zA-Z0-9,.?! ]+$/.test(string);
 }
 
 export const passwordCheck = (string) => {
