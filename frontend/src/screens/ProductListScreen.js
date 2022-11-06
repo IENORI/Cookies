@@ -155,6 +155,7 @@ export default function ProductListScreen() {
                         accept="image/*"
                         onChange={(e) => setImageFile(e.target.files[0])}
                       />
+                      <small className="form-text text-muted">Max image size<code> 8 MB</code></small>
                     </Form.Group>
                   </Row>
                   <Row>

@@ -24,6 +24,8 @@ export default function SigninScreen() {
   const { state } = useContext(Store); //to use the context that was already defined
   const { userInfo } = state;
 
+  const [submitLoading, setSubmitLoading] = useState(false);
+
   const submitHandler = async (e) => {
     e.preventDefault(); //prevents page from refreshing
     const token = captchaRef.current.getValue();
@@ -34,6 +36,7 @@ export default function SigninScreen() {
         password.match(/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9 #$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~ ]+)$/) != null
       ]
       if (!conditions.includes(false)) {
+        setSubmitLoading(true)
         const { data } = await axios.post('/api/users/signin', {
           token,
           email,
@@ -93,7 +96,7 @@ export default function SigninScreen() {
           ref={captchaRef}
         />
         <div className="mb-3">
-          <Button type="submit">Sign In</Button>
+          {submitLoading === false ? (<Button type="submit">Sign In</Button>) : (<Button type="submit" disabled>  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></Button>)}
         </div>
         <div className="mb-3">
           New Customer?{' '}

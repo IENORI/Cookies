@@ -46,7 +46,7 @@ export const alphanumeric = (string) => {
 }
 
 export const alphanumericWithPunctuation = (string) => {
-  return /^[a-zA-Z0-9,.?! ]+$/.test(string);
+  return /^[a-zA-Z0-9,.?!' ]+$/.test(string);
 }
 
 export const passwordCheck = (string) => {

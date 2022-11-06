@@ -50,10 +50,7 @@ function validateSignUpFields(name, email, password, confirmPassword) {
     return 'Invalid password2 format!';
   }
 
-  var commonPwds = fs
-    .readFileSync('10k-most-common.txt', 'utf8')
-    .toString()
-    .split(/\r?\n/);
+  var commonPwds = fs.readFileSync('10k-most-common.txt', 'utf8').toString().split(/\r?\n/);
 
   if (commonPwds.includes(password)) {
     return 'Common password entered! For security reasons please use another password.';

@@ -87,6 +87,7 @@ function App() {
     localStorage.removeItem('userInfo');
     localStorage.removeItem('shippingAddress');
     localStorage.removeItem('paymentMethod');
+    localStorage.removeItem('validUserIdEmail'); //nuke localstorage
     window.location.href = '/signin'; //redirect user back to sign in screen, else it will crash lol
   };
   return (

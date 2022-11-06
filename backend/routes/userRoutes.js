@@ -14,7 +14,7 @@ import { lettersOnly } from '../utils.js';
 import { passwordCheck } from '../utils.js';
 import signInFunction from '../functions/signInFunction.js';
 import signUpFunction from '../functions/signUpFunction.js';
-import validatePasswordUpdateFields from '../functions/updateProfileFunction.js';
+import updateProfileFunction from '../functions/updateProfileFunction.js';
 import forgotPasswordFunction from '../functions/forgotPasswordFunction.js';
 import Log from '../models/logModel.js';
 import * as EmailValidator from 'email-validator';
@@ -480,9 +480,21 @@ userRouter.put(
     const passwordUpdateFLog = new Log({
       user: user._id,
       isAdmin: user.isAdmin,
-      statusCode: "404",
+      statusCode: "400",
       activity: "User Failed To Update Password",
     });
+
+    // validate password update fields
+    const validFields = updateProfileFunction.validatePasswordUpdateFields(
+      req.body.oldpassword,
+      req.body.password,
+    );
+
+    if (validFields != 'valid') {
+      res.status(400).send({ message: validFields });
+      await passwordUpdateFLog.save();
+      return;
+    }
 
     if (bcrypt.compareSync(req.body.oldpassword, user.password)) {
       user.password = bcrypt.hashSync(req.body.password, 8);
@@ -490,7 +502,7 @@ userRouter.put(
       await passwordUpdateLog.save();
       res.status(200).send();
     } else {
-      res.status(200).send();
+      res.status(400).send();
       await passwordUpdateFLog.save();
     }
   })

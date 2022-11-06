@@ -10,11 +10,21 @@ import Log from '../models/logModel.js';
 import { alphanumeric } from "../utils.js";
 import { alphanumericWithPunctuation } from "../utils.js";
 import { numbersOnly } from "../utils.js";
+import { fileTypeFromStream } from "file-type";
+import fetch from "node-fetch";
 
 
 dotenv.config(); //to fetch variables
 
 const productRouter = express.Router();
+
+const mimelist = [
+  'image/png',
+  'image/jpg',
+  'image/jpeg',
+];
+
+const fileSizeLimit = 8192000; // 8MB
 
 const spaceEndPoint = new aws.Endpoint(process.env.SPACES_ENDPOINT);
 const s3 = new aws.S3({
@@ -31,6 +41,16 @@ const S3URL =
   "/";
 var dynamicFileName;
 const upload = multer({
+  fileFilter: (req, file, cb) => {
+    const fileSize = parseInt(req.headers["content-length"]);
+    if (fileSize > fileSizeLimit){
+      return cb(new Error('File too big!'))
+    }
+    if (!mimelist.includes(file.mimetype)) {
+      return cb(new Error('only .png, .jpg and .jpeg files are allowed'))
+    }
+    cb(null, true)
+  },
   storage: multerS3({
     s3: s3,
     bucket: process.env.SPACES_BUCKET,
@@ -129,6 +149,18 @@ productRouter.post(
       activity: "Admin Failed to Create Product",
     })
     if (req.user.isAdmin) {
+      //Check file to ensure only valid file formats are uploaded
+      const url = req.file.location;
+
+      const file_response = await fetch(url);
+
+      const metadata = await fileTypeFromStream(file_response.body);
+      if (!mimelist.includes(metadata.mime)) {
+        res.status(404).send({ message: "Invalid file format!" });
+        await createProductFLog.save();
+        return;
+      }
+
       if (alphanumeric(req.body.name) && alphanumeric(req.body.category)
         && alphanumericWithPunctuation(req.body.description) && numbersOnly(req.body.price)
         && numbersOnly(req.body.quantity)) {
