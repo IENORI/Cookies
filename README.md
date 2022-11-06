@@ -1,11 +1,36 @@
 # Cookies
 
-## Getting up and running
+## Production Mode
 
+##### Prerequisite
+- Place `.env` at root of `backend/`
+- Modify `.env` where appropriate
+
+#### Compiling the frontend
+```console
+user@userpc ~/Cookies/ $ cd frontend
+user@userpc ~/Cookies/frontend $ docker build . -t frontend
+```
+
+#### Compiling the backend
+```console
+user@userpc ~/Cookies/ $ cd backend
+user@userpc ~/Cookies/backend $ docker build . -t backend
+```
+
+#### Bringing Services Up
+```console
+user@userpc ~/Cookies/ $ docker-compose -f docker-compose-app.yml up -d
+```
+
+## Development Mode
 `2` seperate terminal instances will be required to run backend and frontend services simultaneously
 
-### Setting up backend
-0. Place `.env` at root of `backend/`
+##### Prerequisite
+- Place `.env` at root of `backend/`
+- Modify `.env` where appropriate
+
+#### Setting up backend
 
 1. Install backend dependencies
 ```
