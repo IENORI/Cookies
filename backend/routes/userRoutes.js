@@ -73,14 +73,14 @@ userRouter.post(
     const captchaResult = await signInFunction.verifyCaptcha(token);
 
     const captchaLog = new Log({
-      statusCode: '422',
-      activity: 'Captcha Error',
-    });
+      statusCode: "422",
+      activity: "Captcha Error",
+    })
 
     const validFLog = new Log({
-      statusCode: '400',
-      activity: 'Invalid Email/Password',
-    });
+      statusCode: "400",
+      activity: "Invalid Email/Password",
+    })
 
     if (captchaResult === 'Captcha Error') {
       res.status(401).send({ message: captchaResult }); //401 is unauthorized
@@ -89,11 +89,8 @@ userRouter.post(
     }
 
     // validate email and password fields
-    const validFields = signInFunction.validateSignInFields(
-      req.body.email,
-      req.body.password
-    );
-    if (validFields != 'valid') {
+    const validFields = signInFunction.validateSignInFields(req.body.email, req.body.password);
+    if (validFields != "valid") {
       res.status(400).send({ message: validFields });
       await validFLog.save();
       return;
@@ -180,7 +177,7 @@ userRouter.post(
 
     const signUpLog = new Log({
       user: user._id,
-      statusCode: '200',
+      statusCode: "200",
       activity: 'New User Created.',
     });
     await signUpLog.save();
@@ -218,9 +215,9 @@ userRouter.delete(
     const deleteUserLog = new Log({
       user: req.user._id,
       isAdmin: req.user.isAdmin,
-      statusCode: '200',
-      activity: 'Admin deleted Account: ' + user._id,
-    });
+      statusCode: "200",
+      activity: "Admin deleted Account: " + user._id,
+    })
     res.send('User Deleted');
     await deleteUserLog.save();
     return;
@@ -274,16 +271,16 @@ userRouter.post(
     const signInLog = new Log({
       user: user._id,
       isAdmin: user.isAdmin,
-      statusCode: '200',
-      activity: 'User Successfully Logged In',
-    });
+      statusCode: "200",
+      activity: "User Successfully Logged In",
+    })
 
     const signInFLog = new Log({
       user: user._id,
       isAdmin: user.isAdmin,
-      statusCode: '404',
-      activity: 'User Failed To Key In Correct OTP',
-    });
+      statusCode: "404",
+      activity: "User Failed To Key In Correct OTP",
+    })
 
     if (user) {
       const stored_secret = user.temp_secret;
@@ -325,9 +322,7 @@ userRouter.post(
   '/resetpassword',
   expressAsyncHandler(async (req, res) => {
     // validate email format
-    const emailValidateResult = forgotPasswordFunction.validateEmail(
-      req.body.email
-    );
+    const emailValidateResult = forgotPasswordFunction.validateEmail(req.body.email);
     if (emailValidateResult === 'Invalid email format!') {
       res.status(400).send({ message: emailValidateResult });
       return;
@@ -347,7 +342,7 @@ userRouter.post(
       }).save();
 
       // save new password generated to database
-      const clientURL = 'https://cookies.gg3z.xyz';
+      const clientURL = process.env.CLIENT_URL;
       const link = `${clientURL}/passwordReset?token=${resetToken}&id=${user._id}`;
       mailOptions['to'] = user.email;
       mailOptions['subject'] = 'Password reset';
@@ -395,9 +390,9 @@ userRouter.post(
     const resetPasswordLog = new Log({
       user: user._id,
       isAdmin: user.isAdmin,
-      statusCode: '200',
-      activity: 'User Reset Password Successfully.',
-    });
+      statusCode: "200",
+      activity: "User Reset Password Successfully.",
+    })
 
     if (user) {
       user.password = bcrypt.hashSync(req.body.password, 8); //8 is the salt
@@ -442,21 +437,17 @@ userRouter.put(
     const profileUpdateLog = new Log({
       user: user._id,
       isAdmin: user.isAdmin,
-      statusCode: '200',
-      activity: 'User Successfully Updated Profile',
+      statusCode: "200",
+      activity: "User Successfully Updated Profile",
     });
     const profileUpdateFLog = new Log({
       user: user._id,
       isAdmin: user.isAdmin,
-      statusCode: '404',
-      activity: 'User Failed To Update Profile',
+      statusCode: "404",
+      activity: "User Failed To Update Profile",
     });
 
-    if (
-      user &&
-      lettersOnly(req.body.name) &&
-      EmailValidator.validate(req.body.email)
-    ) {
+    if (user && lettersOnly(req.body.name) && EmailValidator.validate(req.body.email)){
       user.name = req.body.name || user.name;
       user.email = req.body.email || user.email;
       if (bcrypt.compareSync(req.body.verifyPassword, user.password)) {
@@ -470,6 +461,7 @@ userRouter.put(
     } else {
       res.status(404).send({ message: 'Update Failed' });
     }
+
   })
 );
 
@@ -482,20 +474,20 @@ userRouter.put(
     const passwordUpdateLog = new Log({
       user: user._id,
       isAdmin: user.isAdmin,
-      statusCode: '200',
-      activity: 'User Successfully Updated Password',
+      statusCode: "200",
+      activity: "User Successfully Updated Password",
     });
     const passwordUpdateFLog = new Log({
       user: user._id,
       isAdmin: user.isAdmin,
-      statusCode: '400',
-      activity: 'User Failed To Update Password',
+      statusCode: "400",
+      activity: "User Failed To Update Password",
     });
 
     // validate password update fields
     const validFields = updateProfileFunction.validatePasswordUpdateFields(
       req.body.oldpassword,
-      req.body.password
+      req.body.password,
     );
 
     if (validFields != 'valid') {
