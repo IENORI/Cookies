@@ -23,6 +23,10 @@ user@userpc ~/Cookies/backend $ docker build . -t backend
 user@userpc ~/Cookies/ $ docker-compose -f docker-compose-app.yml up -d
 ```
 
+Services will now be up at http://localhost:3000
+
+
+
 ## Development Mode
 `2` seperate terminal instances will be required to run backend and frontend services simultaneously
 
